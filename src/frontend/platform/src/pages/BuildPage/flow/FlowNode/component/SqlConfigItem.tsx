@@ -1,5 +1,6 @@
 import { Input } from "@/components/bs-ui/input";
 import { Label } from "@/components/bs-ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/bs-ui/select";
 import { Switch } from "@/components/bs-ui/switch";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next"; // 引入国际化
@@ -9,7 +10,7 @@ export default function SqlConfigItem({ data, onChange, onValidate }) {
     const [values, setValues] = useState(data.value);
     const [errors, setErrors] = useState({});
 
-    const { db_address, db_name, db_username, db_password, open } = values;
+    const { db_address, db_name, db_username, db_password, db_type = 'postgres', open } = values;
 
     // 校验方法
     const handleValidate = () => {
@@ -19,6 +20,11 @@ export default function SqlConfigItem({ data, onChange, onValidate }) {
         const errorMessages = [];
 
         const validations = [
+            {
+                key: "db_type",
+                value: db_type,
+                requiredMsg: t("dbTypeRequired"), // 数据库类型不可为空
+            },
             {
                 key: "db_address",
                 value: db_address,
@@ -86,8 +92,20 @@ export default function SqlConfigItem({ data, onChange, onValidate }) {
             {/* 配置表单 */}
             {open && (
                 <>
+                    {/* 数据库类型 */}
+                    <Label className="flex items-center bisheng-label">{t("dbType")}</Label> {/* 数据库类型 */}
+                    <Select value={db_type} onValueChange={(value) => handleChange("db_type", value)}>
+                        <SelectTrigger className={`mt-2 nodrag ${errors.db_type ? "border-red-500" : ""}`}>
+                            <SelectValue placeholder={t("selectDbType")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="postgres">PostgreSQL</SelectItem>
+                            <SelectItem value="mysql">MySQL</SelectItem>
+                        </SelectContent>
+                    </Select>
+
                     {/* 数据库地址 */}
-                    <Label className="flex items-center bisheng-label">{t("dbAddress")}</Label> {/* 数据库地址 */}
+                    <Label className="flex items-center bisheng-label mt-4">{t("dbAddress")}</Label> {/* 数据库地址 */}
                     <Input
                         className={`mt-2 nodrag ${errors.db_address ? "border-red-500" : ""}`}
                         value={db_address}

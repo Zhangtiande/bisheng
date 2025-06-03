@@ -74,7 +74,10 @@ class AgentNode(BaseNode):
         self._sql_agent = self.node_params.get('sql_agent')
         self._sql_address = ''
         if self._sql_agent and self._sql_agent['open']:
-            self._sql_address = f'mysql+pymysql://{self._sql_agent["db_username"]}:{self._sql_agent["db_password"]}@{self._sql_agent["db_address"]}/{self._sql_agent["db_name"]}?charset=utf8mb4'
+            if self._sql_agent['db_type'] == 'postgresql':  
+                self._sql_address = f'postgresql+psycopg2://{self._sql_agent["db_username"]}:{self._sql_agent["db_password"]}@{self._sql_agent["db_address"]}/{self._sql_agent["db_name"]}'
+            elif self._sql_agent['db_type'] == 'mysql':
+                self._sql_address = f'mysql+pymysql://{self._sql_agent["db_username"]}:{self._sql_agent["db_password"]}@{self._sql_agent["db_address"]}/{self._sql_agent["db_name"]}'
 
         # agent
         self._agent_executor_type = 'React'

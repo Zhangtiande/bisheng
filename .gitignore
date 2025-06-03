@@ -265,3 +265,8 @@ sftp-config.json
 docker/data/*
 docker/mysql/data/*
 docker/office/bisheng/*.gz
+docker/mysql/data/*
+docker/office/bisheng/*
+src/backend/bisheng/logs/*
+docker/data/*
+*/package-lock.json
