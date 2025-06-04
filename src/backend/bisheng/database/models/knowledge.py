@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Any, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from bisheng.database.base import session_getter
 from bisheng.database.models.base import SQLModelSerializable
@@ -9,7 +9,7 @@ from bisheng.database.models.role_access import AccessType, RoleAccessDao
 from bisheng.database.models.user import UserDao
 from bisheng.database.models.user_role import UserRoleDao
 from pydantic import BaseModel, field_validator
-from sqlmodel import Column, DateTime, Field, delete, func, or_, select, text, update, CHAR
+from sqlmodel import Column, DateTime, Field, delete, func, or_, select, text, update, CHAR, JSON
 from sqlmodel.sql.expression import Select, SelectOfScalar
 
 
@@ -17,6 +17,63 @@ class KnowledgeTypeEnum(Enum):
     QA = 1
     NORMAL = 0
     PRIVATE = 2
+
+
+class StorageTypeEnum(Enum):
+    MINIO = 0
+    CMS_2_0 = 1
+    CMS_3_0 = 2
+
+
+class StorageConfig:
+    """Storage configuration helper class"""
+    
+    @staticmethod
+    def validate_cms_config(storage_type: int, config: Dict[str, Any]) -> bool:
+        """Validate CMS storage configuration"""
+        if storage_type == StorageTypeEnum.MINIO.value:
+            return True  # No validation needed for MINIO
+        
+        if not config:
+            return False
+        
+        # Common required fields for both CMS 2.0 and 3.0
+        required_fields = ['username', 'password', 'host', 'port', 'siteShortName']
+        
+        for field in required_fields:
+            if field not in config or not config[field]:
+                return False
+        
+        # CMS 2.0 requires additional rootNodeRef field
+        if storage_type == StorageTypeEnum.CMS_2_0.value:
+            if 'rootNodeRef' not in config or not config['rootNodeRef']:
+                return False
+        
+        return True
+    
+    @staticmethod
+    def get_default_config(storage_type: int) -> Optional[Dict[str, Any]]:
+        """Get default configuration template for storage type"""
+        if storage_type == StorageTypeEnum.MINIO.value:
+            return None
+        elif storage_type == StorageTypeEnum.CMS_2_0.value:
+            return {
+                'username': '',
+                'password': '',
+                'host': '',
+                'port': '',
+                'siteShortName': '',
+                'rootNodeRef': ''
+            }
+        elif storage_type == StorageTypeEnum.CMS_3_0.value:
+            return {
+                'username': '',
+                'password': '',
+                'host': '',
+                'port': '',
+                'siteShortName': ''
+            }
+        return None
 
 
 class KnowledgeBase(SQLModelSerializable):
@@ -28,6 +85,8 @@ class KnowledgeBase(SQLModelSerializable):
     collection_name: Optional[str] = Field(default=None, index=False)
     index_name: Optional[str] = Field(default=None, index=False)
     state: Optional[int] = Field(index=False, default=1, description='0 为未发布，1 为已发布, 2 为复制中')
+    storage_type: Optional[int] = Field(index=False, default=0, description='对象存储类型: 0 为默认的minio，1 为CMS2.0，2 为CMS3.0')
+    storage_config: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON), description='对象存储配置，仅针对CMS生效')
     create_time: Optional[datetime] = Field(default=None, sa_column=Column(
         DateTime, nullable=False, server_default=text('CURRENT_TIMESTAMP')))
     update_time: Optional[datetime] = Field(default=None, sa_column=Column(
@@ -38,6 +97,21 @@ class KnowledgeBase(SQLModelSerializable):
     def convert_model(cls, v: Any) -> str:
         if isinstance(v, int):
             v = str(v)
+        return v
+
+    @field_validator('storage_config', mode='before')
+    @classmethod
+    def validate_storage_config(cls, v: Any, info) -> Optional[Dict[str, Any]]:
+        if v is None:
+            return v
+        
+        # Get storage_type from the data being validated
+        storage_type = info.data.get('storage_type', 0) if hasattr(info, 'data') and info.data else 0
+        
+        # Validate configuration based on storage type
+        if not StorageConfig.validate_cms_config(storage_type, v):
+            raise ValueError(f"Invalid storage configuration for storage type {storage_type}")
+        
         return v
 
 
@@ -55,6 +129,8 @@ class KnowledgeUpdate(BaseModel):
     knowledge_id: int
     name: Optional[str] = None
     description: Optional[str] = None
+    storage_type: Optional[int] = None
+    storage_config: Optional[Dict[str, Any]] = None
 
 
 class KnowledgeCreate(KnowledgeBase):
