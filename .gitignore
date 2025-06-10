@@ -270,3 +270,4 @@ docker/office/bisheng/*
 src/backend/bisheng/logs/*
 docker/data/*
 */package-lock.json
+src/backend/bisheng/config.yaml

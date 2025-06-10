@@ -52,8 +52,11 @@ services:
     restart: on-failure
 
   backend:
-    container_name: bisheng-backend
-    image: dataelement/bisheng-backend:v1.2.0
+    container_name: yCopilot-Core
+    image: 10.191.6.39:8085/ycopilot-v2/ycopilot-core:${VERSION}
+    build:
+      context: ../src/backend
+      dockerfile: Dockerfile
     ports:
       - "7860:7860"
     environment:
@@ -92,8 +95,11 @@ services:
         condition: service_started
 
   frontend:
-    container_name: bisheng-frontend
-    image: dataelement/bisheng-frontend:v1.2.0
+    container_name: yCopilot-manage
+    image: 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:${VERSION}
+    build:
+      context: ../src/frontend
+      dockerfile: Dockerfile
     ports:
       - "3001:3001"
     environment:
