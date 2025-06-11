@@ -135,7 +135,7 @@ export const LoginPage = () => {
             <div className='w-full h-full relative z-10'>
                 <div className="relative p-6 mb-4 rounded-lg">
                     <div className="relative z-10 w-fit m-auto">
-                        <img src={__APP_ENV__.BASE_URL + '/login-logo-small.png'} className="block w-auto h-[68px] dark:hidden bg-blue-500 rounded-lg shadow-lg p-3" alt="" />
+                        <img src={__APP_ENV__.BASE_URL + '/login-logo-small.png'} className="block w-auto h-[68px] dark:hidden bg-blue-900 rounded-lg shadow-lg p-3" alt="" />
                         <img src={__APP_ENV__.BASE_URL + '/logo-small-dark.png'} className="w-auto h-[48px] hidden dark:block bg-blue-900/20 rounded-lg shadow-lg p-3" alt="" />
                     </div>
                 </div>
@@ -195,7 +195,7 @@ export const LoginPage = () => {
                                 {!isLDAP && appConfig.register && <a href="javascript:;" className=" text-blue-500 text-sm hover:underline" onClick={() => setShowLogin(false)}>{t('login.noAccountRegister')}</a>}
                             </div>
                             <Button
-                                className='h-[48px] mt-[32px] bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-600 dark:hover:bg-blue-700 shadow-md hover:shadow-lg transition-all'
+                                className='h-[48px] mt-[32px] bg-blue-900 hover:bg-blue-800 dark:bg-button'
                                 disabled={isLoading} onClick={handleLogin} >{t('login.loginButton')}</Button>
                         </> :
                             <>
@@ -203,7 +203,7 @@ export const LoginPage = () => {
                                     <a href="javascript:;" className=" text-blue-500 text-sm hover:underline" onClick={() => setShowLogin(true)}>{t('login.haveAccountLogin')}</a>
                                 </div>
                                 <Button
-                                    className='h-[48px] mt-[32px] bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-600 dark:hover:bg-blue-700 shadow-md hover:shadow-lg transition-all'
+                                    className='h-[48px] mt-[32px]  bg-blue-900 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 shadow-md hover:shadow-lg transition-all'
                                     disabled={isLoading} onClick={handleRegister} >{t('login.registerButton')}</Button>
                             </>
                     }

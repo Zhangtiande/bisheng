@@ -47,18 +47,18 @@ export default function LoginBridge({ onHasLdap }) {
 
     if (!ssoUrl && !wxUrl) return null
 
-    return <div className="mt-6">
+    return <div>
         <Separator className="my-4" text={t('login.otherMethods')}></Separator>
-        <div className="flex justify-center items-center gap-4 mt-4">
-            {ssoUrl && <Button 
-                className="h-[48px] px-8 rounded-md bg-blue-600 hover:bg-blue-700 text-white" 
+        <div className="flex justify-center items-center">
+            {ssoUrl && <Button
+                className="h-[48px] rounded-md bg-white hover:bg-gray-50/20"
                 onClick={handleCASLogin}
             >
-                CAS单点登录
+                <img src="/a1-logo-blue.png" alt="CAS" className="h-6" />
             </Button>}
-            {wxUrl && <Button 
-                variant="outline" 
-                className="h-[48px] px-4" 
+            {wxUrl && <Button
+                variant="outline"
+                className="h-[48px] px-4"
                 onClick={() => location.href = wxUrl}
             >
                 <Wxpro className="mr-2" />
