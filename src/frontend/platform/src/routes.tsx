@@ -27,6 +27,7 @@ import TaskAppChats from "./pages/LabelPage/taskAppChats";
 import TaskApps from "./pages/LabelPage/taskApps";
 import LogPage from "./pages/LogPage";
 import AppChatDetail from "./pages/LogPage/useAppLog/appChatDetail";
+import { CasCallback } from "./pages/LoginPage/CasCallback";
 import { LoginPage } from "./pages/LoginPage/login";
 import { ResetPwdPage } from "./pages/LoginPage/resetPwd";
 import Doc from "./pages/ModelPage/doc";
@@ -164,6 +165,7 @@ export const getAdminRouter = () => {
 
 export const publicRouter = createBrowserRouter([
   { path: "/", element: <LoginPage /> },
+  { path: "/cas-callback", element: <CasCallback /> }, // 新增CAS回调处理路由
   { path: "/reset", element: <ResetPwdPage /> },
   { path: "/chat/:id/", element: <ChatShare /> },
   { path: "/chat/flow/:id/", element: <ChatShare type={AppNumType.FLOW} /> },

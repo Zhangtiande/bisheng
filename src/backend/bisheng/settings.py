@@ -243,7 +243,7 @@ class Settings(BaseModel):
         # 获取密码相关的配置项
         all_config = self.get_all_config()
         tmp = SystemLoginMethod(**all_config.get('system_login_method', {}))
-        tmp.bisheng_pro = os.getenv('BISHENG_PRO') == 'true'
+        tmp.bisheng_pro = True
         return tmp
 
     def get_workflow_conf(self) -> WorkflowConf:

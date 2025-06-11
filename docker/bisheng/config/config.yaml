@@ -48,6 +48,14 @@ object_storage:
 environment:
   env: dev
   uns_support: ['png','jpg','jpeg','bmp','doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt', 'md', 'html', 'pdf', 'csv', 'tiff']
+  sso:
+    cas:
+      base_url: "http://10.191.44.21/cas"
+      login_url: "http://10.191.44.21/cas/login"
+      validate_url: "http://10.191.44.21/cas/serviceValidate"
+      service_url: "http://10.191.21.185:3001/cas-callback"  # 替换为您的bisheng应用URL
+      default_email_format: "{username}@globalymc.com"  # 用户邮箱格式，{username}会被替换为CAS用户名
+      enabled: true
 
 # 可根据loguru的文档配置不同 handlers
 logger_conf:
