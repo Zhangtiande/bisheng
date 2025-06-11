@@ -5,6 +5,7 @@ from bisheng.api.v1 import (assistant_router, audit_router, chat_router, compone
                             report_router, server_router, skillcenter_router, tag_router,
                             user_router, validate_router, variable_router, workflow_router,
                             workstation_router)
+from bisheng.api.cas import router as cas_router  # 导入CAS路由
 from bisheng.api.v2 import (assistant_router_rpc, chat_router_rpc, flow_router,
                             knowledge_router_rpc, rpc_router_rpc, workflow_router_rpc,
                             workstation_router_rpc)
@@ -33,6 +34,9 @@ router.include_router(llm_router)
 router.include_router(workflow_router)
 router.include_router(mark_router)
 router.include_router(workstation_router)
+
+router_cas = APIRouter(prefix='/api', )
+router_cas.include_router(cas_router)  # 将CAS路由添加到主路由中
 
 router_rpc = APIRouter(prefix='/api/v2', )
 router_rpc.include_router(knowledge_router_rpc)

@@ -77,11 +77,28 @@ export function getUserGroupsProApi() {
     return axios.get(`/api/group/list`);
 }
 
-// GET sso URL
+// GET sso URL - 获取SSO URL和相关配置
 export function getSSOurlApi() {
-    // return Promise.resolve(url)
-    return axios.get(`/api/oauth2/list`)
+    return axios.get(`/api/cas/list`)
+        .then(response => {
+            // 确保返回的数据包含必要的CAS参数
+            // 如果后端没有提供完整的CAS配置，前端可以使用这些默认值
+            return {
+                ...response,
+                // 确保serviceUrl存在，用于CAS登录流程
+                serviceUrl: response.serviceUrl || window.location.origin + '/cas-callback'
+            };
+        });
 }
+
+/**
+ * CAS登录验证
+ * 用于处理CAS登录回调，验证票据
+ * @param ticket CAS登录后返回的票据
+ */
+export const verifyCasTicketApi = (ticket) => {
+    return axios.get(`/api/cas/ticket/verify?ticket=${ticket}`);
+};
 
 export async function getKeyApi() {
     return await axios.get('/api/getkey')
