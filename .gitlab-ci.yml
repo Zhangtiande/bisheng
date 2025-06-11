@@ -6,9 +6,21 @@ stages:
 variables:
   DOCKER_COMPOSE_FILE: ./docker/docker-compose.yml
 
+# 定义文件变更规则
+.backend_changes: &backend_changes
+  changes:
+    - src/backend/**/*
+
+.frontend_changes: &frontend_changes
+  changes:
+    - src/frontend/**/*
+
 workflow:
   rules:
     - if: $CI_COMMIT_TAG
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 generate-changelog:
   stage: changelog
@@ -30,36 +42,94 @@ build-base:
     - cd ./src/backend
     - docker build -t 10.191.6.39:8085/ycopilot-v2/ycopilot-core:base.v2 -f base.Dockerfile . --build-arg ALL_PROXY=$PROXY
     - docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-core:base.v2
+  tags:
+    - yCopilot
 
+# 后端构建任务 - 支持多种触发条件
 build-core:
   stage: build
   variables:
     PROXY: http://10.191.21.213:10809
   script:
     - cd ./docker
-    - VERSION=$CI_COMMIT_TAG PROXY=$PROXY docker compose build backend
+    - |
+      if [ "$CI_COMMIT_TAG" ]; then
+        VERSION=$CI_COMMIT_TAG
+      else
+        VERSION=${CI_COMMIT_SHORT_SHA}
+      fi
+    - VERSION=$VERSION PROXY=$PROXY docker compose build backend
     - docker login -u admin -p $CI_JOB_PASSWORD 10.191.6.39:8085
-    - docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-core:$CI_COMMIT_TAG
-    - docker tag 10.191.6.39:8085/ycopilot-v2/ycopilot-core:$CI_COMMIT_TAG 10.191.6.39:8085/ycopilot-v2/ycopilot-core:latest
-    - docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-core:latest
+    - docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-core:$VERSION
+    - |
+      if [ "$CI_COMMIT_TAG" ]; then
+        docker tag 10.191.6.39:8085/ycopilot-v2/ycopilot-core:$VERSION 10.191.6.39:8085/ycopilot-v2/ycopilot-core:latest
+        docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-core:latest
+      fi
   rules:
+    # Tag 构建
     - if: $CI_COMMIT_TAG
+    # 手动触发构建后端
+    - if: $CI_PIPELINE_SOURCE == "web" && $BUILD_BACKEND == "true"
+    # 后端文件变更时自动构建
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      <<: *backend_changes
+    # MR 中后端文件变更
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      <<: *backend_changes
   tags:
     - yCopilot
 
-build-vectoring:
+# 仅构建后端的手动任务
+build-core-only:
+  extends: build-core
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" && $BUILD_BACKEND_ONLY == "true"
+      when: manual
+  tags:
+    - yCopilot
+
+# 前端构建任务 - 支持多种触发条件
+build-frontend:
   stage: build
   variables:
     PROXY: http://10.191.21.213:10809
   script:
     - cd ./docker
-    - VERSION=$CI_COMMIT_TAG PROXY=$PROXY docker compose build frontend
+    - |
+      if [ "$CI_COMMIT_TAG" ]; then
+        VERSION=$CI_COMMIT_TAG
+      else
+        VERSION=${CI_COMMIT_SHORT_SHA}
+      fi
+    - VERSION=$VERSION PROXY=$PROXY docker compose build frontend
     - docker login -u admin -p $CI_JOB_PASSWORD 10.191.6.39:8085
-    - docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:$CI_COMMIT_TAG
-    - docker tag 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:$CI_COMMIT_TAG 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:latest
-    - docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:latest
+    - docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:$VERSION
+    - |
+      if [ "$CI_COMMIT_TAG" ]; then
+        docker tag 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:$VERSION 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:latest
+        docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:latest
+      fi
   rules:
+    # Tag 构建
     - if: $CI_COMMIT_TAG
+    # 手动触发构建前端
+    - if: $CI_PIPELINE_SOURCE == "web" && $BUILD_FRONTEND == "true"
+    # 前端文件变更时自动构建
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      <<: *frontend_changes
+    # MR 中前端文件变更
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      <<: *frontend_changes
+  tags:
+    - yCopilot
+
+# 仅构建前端的手动任务
+build-frontend-only:
+  extends: build-frontend
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" && $BUILD_FRONTEND_ONLY == "true"
+      when: manual
   tags:
     - yCopilot
 
@@ -76,7 +146,7 @@ create-release:
         - name: 'yCopilot-Core Docker Image'
           url: 'http://10.191.6.39:8085/ycopilot-v2/ycopilot-core:$CI_COMMIT_TAG'
           link_type: 'image'
-        - name: 'yCopilot-Vectoring Docker Image'
+        - name: 'yCopilot-Manage Docker Image'
           url: 'http://10.191.6.39:8085/ycopilot-v2/ycopilot-manage:$CI_COMMIT_TAG'
           link_type: 'image'
   dependencies:
