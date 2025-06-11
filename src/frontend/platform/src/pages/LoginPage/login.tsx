@@ -125,100 +125,89 @@ export const LoginPage = () => {
         fetchCaptchaData()
     }
 
-    return <div className='w-full h-full bg-background-dark'>
-        <div className='fixed z-10 sm:w-[1280px] w-full sm:h-[720px] h-full translate-x-[-50%] translate-y-[-50%] left-[50%] top-[50%] border rounded-lg shadow-xl overflow-hidden bg-background-login'>
-            <div className='w-[420px] h-[704px] m-[8px] hidden sm:block relative z-20'>
-                <img src={__APP_ENV__.BASE_URL + '/login-logo-big.png'} alt="logo_picture" className='w-full h-full dark:hidden' />
-                <img src={__APP_ENV__.BASE_URL + '/login-logo-dark.png'} alt="logo_picture" className='w-full h-full hidden dark:block' />
-                {/* <iframe src={__APP_ENV__.BASE_URL + '/face.html'} className='w-full h-full'></iframe> */}
-            </div>
-            <div className='absolute w-full h-full z-10 flex justify-end top-0'>
-                <div className='w-[852px] sm:px-[266px] px-[20px] pyx-[200px] bg-background-login relative'>
-                    <div>
-                        <img src={__APP_ENV__.BASE_URL + '/login-logo-small.png'} className="block w-[114px] h-[36px] m-auto mt-[140px] dark:w-[124px] dark:pr-[10px] dark:hidden" alt="" />
-                        <img src={__APP_ENV__.BASE_URL + '/logo-small-dark.png'} className="w-[114px] h-[36px] m-auto mt-[140px] dark:w-[124px] dark:pr-[10px] dark:block hidden" alt="" />
-                        <span className='block w-fit m-auto font-normal text-[14px] text-tx-color mt-[24px]'>{t('login.slogen')}</span>
+    return <div
+        className='w-full h-full bg-cover bg-center flex justify-center items-center'
+        style={{
+            backgroundImage: `url(${__APP_ENV__.BASE_URL}/login.png)`
+        }}
+    >
+        <div className='z-10 sm:w-[480px] w-full p-10 border rounded-lg shadow-2xl overflow-hidden bg-gray-50/70 relative backdrop-blur'>
+            <div className='w-full h-full relative z-10'>
+                <div className="relative p-6 mb-4 rounded-lg">
+                    <div className="relative z-10 w-fit m-auto">
+                        <img src={__APP_ENV__.BASE_URL + '/login-logo-small.png'} className="block w-auto h-[68px] dark:hidden bg-blue-500 rounded-lg shadow-lg p-3" alt="" />
+                        <img src={__APP_ENV__.BASE_URL + '/logo-small-dark.png'} className="w-auto h-[48px] hidden dark:block bg-blue-900/20 rounded-lg shadow-lg p-3" alt="" />
                     </div>
-                    <div className="grid gap-[12px] mt-[68px]">
-                        <div className="grid">
+                </div>
+                <span className='block w-fit m-auto font-normal text-[14px] text-tx-color mt-[24px]'>{t('login.slogen')}</span>
+                <div className="grid gap-[12px] mt-[68px]">
+                    <div className="grid">
+                        <Input
+                            id="email"
+                            className='h-[48px] bg-white/90 dark:bg-login-input border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400'
+                            ref={mailRef}
+                            placeholder={t('login.account')}
+                            type="email"
+                            autoCapitalize="none"
+                            autoComplete="email"
+                            autoCorrect="off"
+                        />
+                    </div>
+                    <div className="grid">
+                        <Input
+                            id="pwd"
+                            className='h-[48px] bg-white/90 dark:bg-login-input border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400'
+                            ref={pwdRef}
+                            placeholder={t('login.password')}
+                            type="password"
+                            onKeyDown={e => e.key === 'Enter' && showLogin && handleLogin()} />
+                    </div>
+                    {
+                        !showLogin && <div className="grid">
+                            <Input id="pwd"
+                                className='h-[48px] bg-white/90 dark:bg-login-input border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400'
+                                ref={agenPwdRef}
+                                placeholder={t('login.confirmPassword')}
+                                type="password" />
+                        </div>
+                    }
+                    {
+                        captchaData.user_capthca && (<div className="flex items-center gap-4">
                             <Input
-                                id="email"
-                                className='h-[48px] dark:bg-login-input'
-                                ref={mailRef}
-                                placeholder={t('login.account')}
-                                type="email"
-                                autoCapitalize="none"
-                                autoComplete="email"
-                                autoCorrect="off"
+                                type="text"
+                                ref={captchaRef}
+                                placeholder={t('login.pleaseEnterCaptcha')}
+                                className="h-[48px] bg-white/90 dark:bg-login-input px-4 border border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none"
+                            />
+                            <img
+                                src={'data:image/jpg;base64,' + captchaData.captcha} // 这里应该是你的验证码图片的URL
+                                alt="captcha"
+                                onClick={fetchCaptchaData} // 这里应该是你的刷新验证码函数
+                                className="cursor-pointer h-[48px] bg-white/90 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded"
+                                style={{ width: '120px' }} // 根据需要调整宽度
                             />
                         </div>
-                        <div className="grid">
-                            <Input
-                                id="pwd"
-                                className='h-[48px] dark:bg-login-input'
-                                ref={pwdRef}
-                                placeholder={t('login.password')}
-                                type="password"
-                                onKeyDown={e => e.key === 'Enter' && showLogin && handleLogin()} />
-                        </div>
-                        {
-                            !showLogin && <div className="grid">
-                                <Input id="pwd"
-                                    className='h-[48px] dark:bg-login-input'
-                                    ref={agenPwdRef}
-                                    placeholder={t('login.confirmPassword')}
-                                    type="password" />
+                        )
+                    }
+                    {
+                        showLogin ? <>
+                            <div className="text-center">
+                                {!isLDAP && appConfig.register && <a href="javascript:;" className=" text-blue-500 text-sm hover:underline" onClick={() => setShowLogin(false)}>{t('login.noAccountRegister')}</a>}
                             </div>
-                        }
-                        {
-                            captchaData.user_capthca && (<div className="flex items-center gap-4">
-                                <Input
-                                    type="text"
-                                    ref={captchaRef}
-                                    placeholder={t('login.pleaseEnterCaptcha')}
-                                    className="form-input px-4 py-2 border border-gray-300 focus:outline-none"
-                                />
-                                <img
-                                    src={'data:image/jpg;base64,' + captchaData.captcha} // 这里应该是你的验证码图片的URL
-                                    alt="captcha"
-                                    onClick={fetchCaptchaData} // 这里应该是你的刷新验证码函数
-                                    className="cursor-pointer h-10 bg-gray-100 border border-gray-300"
-                                    style={{ width: '120px' }} // 根据需要调整宽度
-                                />
-                            </div>
-                            )
-                        }
-                        {
-                            showLogin ? <>
+                            <Button
+                                className='h-[48px] mt-[32px] bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-600 dark:hover:bg-blue-700 shadow-md hover:shadow-lg transition-all'
+                                disabled={isLoading} onClick={handleLogin} >{t('login.loginButton')}</Button>
+                        </> :
+                            <>
                                 <div className="text-center">
-                                    {!isLDAP && appConfig.register && <a href="javascript:;" className=" text-blue-500 text-sm hover:underline" onClick={() => setShowLogin(false)}>{t('login.noAccountRegister')}</a>}
+                                    <a href="javascript:;" className=" text-blue-500 text-sm hover:underline" onClick={() => setShowLogin(true)}>{t('login.haveAccountLogin')}</a>
                                 </div>
                                 <Button
-                                    className='h-[48px] mt-[32px] dark:bg-button'
-                                    disabled={isLoading} onClick={handleLogin} >{t('login.loginButton')}</Button>
-                            </> :
-                                <>
-                                    <div className="text-center">
-                                        <a href="javascript:;" className=" text-blue-500 text-sm hover:underline" onClick={() => setShowLogin(true)}>{t('login.haveAccountLogin')}</a>
-                                    </div>
-                                    <Button
-                                        className='h-[48px] mt-[32px] dark:bg-button'
-                                        disabled={isLoading} onClick={handleRegister} >{t('login.registerButton')}</Button>
-                                </>
-                        }
-                        {appConfig.isPro && <LoginBridge onHasLdap={setIsLDAP} />}
-                    </div>
-                    <div className=" absolute right-[16px] bottom-[16px] flex">
-                        <span className="mr-4 text-sm text-gray-400 relative top-2">v{json.version}</span>
-                        {!appConfig.noFace && <div className='help flex'>
-                            <a href={"https://github.com/dataelement/bisheng"} target="_blank">
-                                <GithubIcon className="block h-[40px] w-[40px] gap-1 border p-[10px] rounded-[8px] mx-[8px] hover:bg-[#1b1f23] hover:text-[white] hover:cursor-pointer" />
-                            </a>
-                            <a href={"https://m7a7tqsztt.feishu.cn/wiki/ZxW6wZyAJicX4WkG0NqcWsbynde"} target="_blank">
-                                <BookOpenIcon className="block h-[40px] w-[40px] gap-1 border p-[10px] rounded-[8px]  hover:bg-[#0055e3] hover:text-[white] hover:cursor-pointer" />
-                            </a>
-                        </div>}
-                    </div>
+                                    className='h-[48px] mt-[32px] bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-600 dark:hover:bg-blue-700 shadow-md hover:shadow-lg transition-all'
+                                    disabled={isLoading} onClick={handleRegister} >{t('login.registerButton')}</Button>
+                            </>
+                    }
+                    {appConfig.isPro && <LoginBridge onHasLdap={setIsLDAP} />}
                 </div>
             </div>
         </div>
