@@ -62,17 +62,18 @@ build-core:
     - docker login -u admin -p $CI_JOB_PASSWORD 10.191.6.39:8085
     - docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-core:$VERSION
     - |
-      if [ "$CI_COMMIT_TAG" ]; then
+      if [ "$CI_COMMIT_TAG" ] || [ "$PUSH_LATEST" = "true" ]; then
         docker tag 10.191.6.39:8085/ycopilot-v2/ycopilot-core:$VERSION 10.191.6.39:8085/ycopilot-v2/ycopilot-core:latest
         docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-core:latest
+        echo "Pushed latest tag for backend"
       fi
   rules:
     # Tag 构建
     - if: $CI_COMMIT_TAG
     # 手动触发构建后端
     - if: $CI_PIPELINE_SOURCE == "web" && $BUILD_BACKEND == "true"
-    # 后端文件变更时自动构建
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    # 后端文件变更时自动构建（排除手动触发）
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE != "web"
       <<: *backend_changes
     # MR 中后端文件变更
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -106,17 +107,18 @@ build-frontend:
     - docker login -u admin -p $CI_JOB_PASSWORD 10.191.6.39:8085
     - docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:$VERSION
     - |
-      if [ "$CI_COMMIT_TAG" ]; then
+      if [ "$CI_COMMIT_TAG" ] || [ "$PUSH_LATEST" = "true" ]; then
         docker tag 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:$VERSION 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:latest
         docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:latest
+        echo "Pushed latest tag for frontend"
       fi
   rules:
     # Tag 构建
     - if: $CI_COMMIT_TAG
     # 手动触发构建前端
     - if: $CI_PIPELINE_SOURCE == "web" && $BUILD_FRONTEND == "true"
-    # 前端文件变更时自动构建
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    # 前端文件变更时自动构建（排除手动触发）
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE != "web"
       <<: *frontend_changes
     # MR 中前端文件变更
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"

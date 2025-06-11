@@ -48,6 +48,12 @@ BUILD_BACKEND_ONLY = true
 BUILD_FRONTEND_ONLY = true
 ```
 
+#### 推送 latest 标签
+```
+PUSH_LATEST = true
+```
+> 注意：可以与其他构建变量组合使用
+
 ## 镜像标签规则
 
 ### Tag 构建
@@ -56,7 +62,8 @@ BUILD_FRONTEND_ONLY = true
 
 ### 非 Tag 构建
 - 使用 Git Commit SHA 短码作为镜像版本号
-- 不推送 `latest` 标签
+- 默认不推送 `latest` 标签
+- 可通过设置 `PUSH_LATEST = true` 强制推送 `latest` 标签
 
 ## 构建任务说明
 
@@ -88,6 +95,17 @@ BUILD_FRONTEND_ONLY = true
 4. 点击 "Run pipeline"
 5. 在 pipeline 页面手动点击 `build-core-only` 任务
 
+### 场景4：手动构建并推送 latest 标签
+1. 进入 GitLab 项目页面
+2. 点击 **CI/CD > Pipelines > Run pipeline**
+3. 添加变量：
+   ```
+   BUILD_FRONTEND = true
+   PUSH_LATEST = true
+   ```
+4. 点击 "Run pipeline"
+5. 构建完成后会同时推送版本标签和 `latest` 标签
+
 ## 优势
 
 1. **节省时间**：只构建变更的部分
@@ -97,6 +115,8 @@ BUILD_FRONTEND_ONLY = true
 
 ## 注意事项
 
-1. 手动构建时，镜像标签使用 commit SHA，不会更新 `latest` 标签
-2. 只有 Tag 构建才会创建 GitLab Release
-3. `*-only` 任务需要手动确认，防止误操作 
+1. 手动构建时，镜像标签使用 commit SHA，默认不会更新 `latest` 标签
+2. 如需在手动构建时推送 `latest` 标签，请设置 `PUSH_LATEST = true`
+3. 只有 Tag 构建才会创建 GitLab Release
+4. `*-only` 任务需要手动确认，防止误操作
+5. `PUSH_LATEST` 变量可以与任何构建变量组合使用 
