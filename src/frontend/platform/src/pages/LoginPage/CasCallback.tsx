@@ -33,12 +33,7 @@ export const CasCallback = () => {
                 console.log("CAS验证响应:", response);
                 // 验证成功，保存token并跳转
                 if (response && response.access_token) {
-                    const accessToken = response.access_token;
-                    // 保存令牌到localStorage
-                    window.self === window.top ?
-                        localStorage.setItem('ws_token', accessToken) :
-                        localStorage.removeItem('ws_token');
-                    // 同时存储到cookie
+                    
                     document.cookie = `access_token_cookie=${response.access_token}; path=/;  SameSite=Lax`;
                     document.cookie = `refresh_token_cookie=${response.refresh_token}; path=/;  SameSite=Lax`;
 
