@@ -38,7 +38,9 @@ export const CasCallback = () => {
                     window.self === window.top ?
                         localStorage.setItem('ws_token', accessToken) :
                         localStorage.removeItem('ws_token');
-                    console.log("Token saved:", localStorage.getItem('ws_token'));
+                    // 同时存储到cookie
+                    document.cookie = `access_token_cookie=${response.access_token}; path=/;  SameSite=Lax`;
+                    document.cookie = `refresh_token_cookie=${response.refresh_token}; path=/;  SameSite=Lax`;
 
                     localStorage.setItem('isLogin', '1');
 
