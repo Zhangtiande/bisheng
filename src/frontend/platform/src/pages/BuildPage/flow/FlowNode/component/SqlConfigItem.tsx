@@ -10,7 +10,7 @@ export default function SqlConfigItem({ data, onChange, onValidate }) {
     const [values, setValues] = useState(data.value);
     const [errors, setErrors] = useState({});
 
-    const { db_address, db_name, db_username, db_password, db_type = 'postgres', open } = values;
+    const { db_address, db_name, db_username, db_password, db_type = 'postgresql', open } = values;
 
     // 校验方法
     const handleValidate = () => {
@@ -99,7 +99,7 @@ export default function SqlConfigItem({ data, onChange, onValidate }) {
                             <SelectValue placeholder={t("selectDbType")} />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="postgres">PostgreSQL</SelectItem>
+                            <SelectItem value="postgresql">PostgreSQL</SelectItem>
                             <SelectItem value="mysql">MySQL</SelectItem>
                         </SelectContent>
                     </Select>
