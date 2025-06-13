@@ -16,6 +16,9 @@ variables:
   changes:
     - src/frontend/**/*
 
+before_script:
+  - chmod +x ./docker/deploy.sh
+
 workflow:
   rules:
     - if: $CI_COMMIT_TAG
@@ -63,7 +66,7 @@ build-core:
     - docker login -u admin -p $CI_JOB_PASSWORD 10.191.6.39:8085
     - docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-core:$VERSION
     - |
-      if [ "$CI_COMMIT_TAG" ] || [ "$PUSH_LATEST" = "true" ]; then
+      if [ "$CI_COMMIT_TAG" ] || [ "$PUSH_LATEST" = "true" ] || [ "$CI_PIPELINE_SOURCE" = "merge_request_event" ]; then
         docker tag 10.191.6.39:8085/ycopilot-v2/ycopilot-core:$VERSION 10.191.6.39:8085/ycopilot-v2/ycopilot-core:latest
         docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-core:latest
         echo "Pushed latest tag for backend"
@@ -108,7 +111,7 @@ build-frontend:
     - docker login -u admin -p $CI_JOB_PASSWORD 10.191.6.39:8085
     - docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:$VERSION
     - |
-      if [ "$CI_COMMIT_TAG" ] || [ "$PUSH_LATEST" = "true" ]; then
+      if [ "$CI_COMMIT_TAG" ] || [ "$PUSH_LATEST" = "true" ] || [ "$CI_PIPELINE_SOURCE" = "merge_request_event" ]; then
         docker tag 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:$VERSION 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:latest
         docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:latest
         echo "Pushed latest tag for frontend"
@@ -164,12 +167,10 @@ create-release:
 # Tag时自动部署前后端
 deploy-production:
   stage: deploy
-  variables:
-    DEPLOY_ENV: "production"
   script:
     - echo "Deploying to production environment with tag latest"
     - cd ./docker
-    - VERSION=latest ./deploy.sh production both latest
+    - ./deploy.sh 
   rules:
     - if: $CI_COMMIT_TAG
   dependencies:
@@ -178,78 +179,13 @@ deploy-production:
   tags:
     - yCopilot
 
-# 手动部署 - 前端
-deploy-frontend-manual:
-  stage: deploy
-  variables:
-    DEPLOY_ENV: "staging"
-  script:
-    - echo "Manually deploying frontend to $DEPLOY_ENV environment"
-    - cd ./docker
-    - |
-      if [ -z "$DOCKER_TAG" ]; then
-        TAG=${CI_COMMIT_SHORT_SHA}
-      else
-        TAG=$DOCKER_TAG
-      fi
-    - VERSION=$TAG ./deploy.sh $DEPLOY_ENV frontend $TAG
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "web" && $DEPLOY_FRONTEND == "true"
-      when: manual
-  tags:
-    - yCopilot
-
-# 手动部署 - 后端
-deploy-backend-manual:
-  stage: deploy
-  variables:
-    DEPLOY_ENV: "staging"
-  script:
-    - echo "Manually deploying backend to $DEPLOY_ENV environment"
-    - cd ./docker
-    - |
-      if [ -z "$DOCKER_TAG" ]; then
-        TAG=${CI_COMMIT_SHORT_SHA}
-      else
-        TAG=$DOCKER_TAG
-      fi
-    - VERSION=$TAG ./deploy.sh $DEPLOY_ENV backend $TAG
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "web" && $DEPLOY_BACKEND == "true"
-      when: manual
-  tags:
-    - yCopilot
-
-# 手动部署 - 前后端
-deploy-both-manual:
-  stage: deploy
-  variables:
-    DEPLOY_ENV: "staging"
-  script:
-    - echo "Manually deploying both frontend and backend to $DEPLOY_ENV environment"
-    - cd ./docker
-    - |
-      if [ -z "$DOCKER_TAG" ]; then
-        TAG=${CI_COMMIT_SHORT_SHA}
-      else
-        TAG=$DOCKER_TAG
-      fi
-    - VERSION=$TAG ./deploy.sh $DEPLOY_ENV both $TAG
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "web" && $DEPLOY_BOTH == "true"
-      when: manual
-  tags:
-    - yCopilot
-
 # 自动部署 - 后端代码变更时
 deploy-backend-auto:
   stage: deploy
-  variables:
-    DEPLOY_ENV: "staging"
   script:
-    - echo "Auto deploying backend to $DEPLOY_ENV environment due to backend changes"
+    - echo "Auto deploying backend due to backend changes"
     - cd ./docker
-    - VERSION=${CI_COMMIT_SHORT_SHA} ./deploy.sh $DEPLOY_ENV backend ${CI_COMMIT_SHORT_SHA}
+    - ./deploy.sh backend
   rules:
     # main分支推送且后端文件变更时自动部署
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -262,12 +198,10 @@ deploy-backend-auto:
 # 自动部署 - 前端代码变更时
 deploy-frontend-auto:
   stage: deploy
-  variables:
-    DEPLOY_ENV: "staging"
   script:
-    - echo "Auto deploying frontend to $DEPLOY_ENV environment due to frontend changes"
+    - echo "Auto deploying frontend  due to frontend changes"
     - cd ./docker
-    - VERSION=${CI_COMMIT_SHORT_SHA} ./deploy.sh $DEPLOY_ENV frontend ${CI_COMMIT_SHORT_SHA}
+    - ./deploy.sh  frontend
   rules:
     # main分支推送且前端文件变更时自动部署
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"
