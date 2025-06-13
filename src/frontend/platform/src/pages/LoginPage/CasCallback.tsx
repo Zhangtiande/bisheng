@@ -12,6 +12,7 @@ export const CasCallback = () => {
     const { t } = useTranslation();
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
     const [errorMessage, setErrorMessage] = useState<string>('');
+    const [isVerifying, setIsVerifying] = useState(false);
 
     useEffect(() => {
         // 从URL中获取ticket参数
@@ -24,41 +25,29 @@ export const CasCallback = () => {
             return;
         }
 
-        // 添加详细的日志记录
-        console.log("正在验证CAS票据:", ticket);
-
         // 验证CAS票据
         verifyCasTicketApi(ticket)
             .then((response) => {
-                console.log("CAS验证响应:", response);
-                // 验证成功，保存token并跳转
                 if (response && response.access_token) {
-                    
                     document.cookie = `access_token_cookie=${response.access_token}; path=/;  SameSite=Lax`;
                     document.cookie = `refresh_token_cookie=${response.refresh_token}; path=/;  SameSite=Lax`;
-
                     localStorage.setItem('isLogin', '1');
 
-                    // 确定重定向地址
                     const path = location.href.indexOf('from=workspace') === -1 ? '' : '/workspace/';
                     const redirectUrl = path ? location.origin + path : '/';
 
-                    // 设置状态为成功并准备跳转
                     setStatus('success');
-                    setTimeout(() => {
-                        location.href = redirectUrl;
-                    }, 1000);
+                    location.href = redirectUrl;
                 } else {
-                    console.error("CAS验证响应格式不正确:", response);
                     throw new Error('Invalid response format');
                 }
             })
             .catch((error) => {
-                console.error("CAS验证错误:", error);
                 setStatus('error');
                 setErrorMessage(typeof error === 'string' ? error : (error.message || t('login.authenticationFailed')));
+                setIsVerifying(false);
             });
-    }, [t]);
+    }, []);
 
     return (
         <div className='w-full h-full flex items-center justify-center'>

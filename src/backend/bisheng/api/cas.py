@@ -7,7 +7,7 @@ from starlette.responses import RedirectResponse
 from sqlmodel import select
 
 from bisheng.settings import settings
-from bisheng.api.v1.schemas import resp_200
+from bisheng.api.v1.schemas import resp_200, resp_500
 from bisheng.database.models.user import UserCreate, User
 from bisheng.database.models.user import UserDao
 from bisheng.utils.logger import logger
@@ -21,24 +21,18 @@ from bisheng.api.utils import get_request_ip
 # 路由前缀/cas
 router = APIRouter(prefix='/cas', tags=['CAS'])
 
-@router.get('/verify')
-async def cas_verify(request: Request, ticket: str = None, redirect: bool = True):
+@router.get('/ticket/verify')
+async def verify_cas_ticket(request: Request, ticket: str = Query(..., description="CAS票据")):
     """
     验证CAS票据，并进行登录处理
-    
-    参数:
-        - ticket: CAS服务器返回的票据
-        - redirect: 是否执行重定向到前端 (默认为True)
-                  当设为False时，直接返回JSON响应，用于前端AJAX调用
+    返回JSON响应，包含令牌信息
     """
     # 获取CAS配置
     sso_config = settings.environment.get('sso', {})
     cas_config = sso_config.get('cas', {})
     
     if not cas_config.get('enabled', False):
-        if not redirect:
-            return resp_200({"error": "CAS单点登录未启用"}, status_code=400)
-        raise HTTPException(status_code=400, detail="CAS单点登录未启用")
+        return resp_500(code=400, data={"error": "CAS单点登录未启用"})
     
     # 获取配置
     validate_url = cas_config.get('validate_url')
@@ -47,17 +41,7 @@ async def cas_verify(request: Request, ticket: str = None, redirect: bool = True
     
     if not validate_url or not service_url:
         logger.error("CAS配置不完整，验证URL或服务URL缺失")
-        if not redirect:
-            return resp_200({"error": "CAS配置不完整"}, status_code=500)
-        raise HTTPException(status_code=500, detail="CAS配置不完整")
-    
-    # 如果没有票据参数，重定向到CAS登录页
-    if not ticket:
-        login_url = cas_config.get('login_url')
-        redirect_url = f"{login_url}?service={service_url}"
-        if not redirect:
-            return resp_200({"error": "No ticket provided"}, status_code=400)
-        return RedirectResponse(url=redirect_url)
+        return resp_500(code=500, data={"error": "CAS配置不完整"})
     
     # 验证票据
     try:
@@ -71,9 +55,7 @@ async def cas_verify(request: Request, ticket: str = None, redirect: bool = True
         response = requests.get(validate_url, params=params)
         if response.status_code != 200:
             logger.error(f"CAS票据验证失败，状态码: {response.status_code}")
-            if not redirect:
-                return resp_200({"error": "CAS票据验证失败"}, status_code=401)
-            raise HTTPException(status_code=401, detail="CAS票据验证失败")
+            return resp_500(code=401, data={"error": "CAS票据验证失败"})
         
         # 解析XML响应
         root = ET.fromstring(response.text)
@@ -86,9 +68,7 @@ async def cas_verify(request: Request, ticket: str = None, redirect: bool = True
             error_code = error_elem.get("code", "UNKNOWN") if error_elem is not None else "UNKNOWN"
             error_msg = error_elem.text if error_elem is not None else "未知错误"
             logger.error(f"CAS票据验证失败: {error_code} - {error_msg}")
-            if not redirect:
-                return resp_200({"error": f"认证失败: {error_msg}"}, status_code=401)
-            raise HTTPException(status_code=401, detail=f"认证失败: {error_msg}")
+            return resp_500(code=401, data={"error": f"认证失败: {error_msg}"})
         
         # 获取用户名
         username = root.find(".//cas:user", ns).text
@@ -150,34 +130,18 @@ async def cas_verify(request: Request, ticket: str = None, redirect: bool = True
             'role': role
         }), get_request_ip(request))
         
-        # 根据redirect参数决定返回方式
-        if redirect:
-            # 重定向到前端，并附带令牌信息
-            frontend_url = f"{service_url}?token={access_token}&refresh_token={refresh_token}"
-            return RedirectResponse(url=frontend_url)
-        else:
-            # 直接返回令牌信息，用于前端AJAX调用
-            return resp_200({
-                "access_token": access_token,
-                "refresh_token": refresh_token,
-                "user_name": user_exist.user_name,
-                "user_id": user_exist.user_id,
-                "role": role
-            })
+        # 返回令牌信息
+        return resp_200({
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+            "user_name": user_exist.user_name,
+            "user_id": user_exist.user_id,
+            "role": role
+        })
     
     except Exception as e:
         logger.exception(f"CAS验证过程中发生错误: {e}")
-        if not redirect:
-            return resp_200({"error": f"验证过程中发生错误: {str(e)}"}, status_code=500)
-        raise HTTPException(status_code=500, detail=f"验证过程中发生错误: {str(e)}")
-
-@router.get('/ticket/verify')
-async def verify_cas_ticket(request: Request, ticket: str = Query(..., description="CAS票据")):
-    """
-    专门为前端AJAX调用设计的CAS票据验证接口
-    直接返回JSON响应，包含令牌信息
-    """
-    return await cas_verify(request, ticket, redirect=False)
+        return resp_500(code=500, data={"error": f"验证过程中发生错误: {str(e)}"})
 
 @router.get('/list')
 async def cas_list(request: Request):
