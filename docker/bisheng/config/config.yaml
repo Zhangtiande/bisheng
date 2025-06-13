@@ -53,7 +53,7 @@ environment:
       base_url: "http://10.191.44.21/cas"
       login_url: "http://10.191.44.21/cas/login"
       validate_url: "http://10.191.44.21/cas/serviceValidate"
-      service_url: "http://10.191.6.215:3001/cas-callback"  # 替换为您的bisheng应用URL
+      service_url: "http://10.191.6.215/cas-callback"  # 替换为您的bisheng应用URL
       default_email_format: "{username}@globalymc.com"  # 用户邮箱格式，{username}会被替换为CAS用户名
       enabled: true
 
