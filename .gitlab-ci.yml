@@ -66,7 +66,7 @@ build-core:
     - docker login -u admin -p $CI_JOB_PASSWORD 10.191.6.39:8085
     - docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-core:$VERSION
     - |
-      if [ "$CI_COMMIT_TAG" ] || [ "$PUSH_LATEST" = "true" ] || [ "$CI_PIPELINE_SOURCE" = "merge_request_event" ]; then
+      if [ "$CI_COMMIT_TAG" ] || [ "$PUSH_LATEST" = "true" ] || [ "$CI_PIPELINE_SOURCE" = "push" ]; then
         docker tag 10.191.6.39:8085/ycopilot-v2/ycopilot-core:$VERSION 10.191.6.39:8085/ycopilot-v2/ycopilot-core:latest
         docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-core:latest
         echo "Pushed latest tag for backend"
@@ -80,7 +80,7 @@ build-core:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE != "web"
       <<: *backend_changes
     # MR 中后端文件变更
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       <<: *backend_changes
   tags:
     - yCopilot
@@ -111,7 +111,7 @@ build-frontend:
     - docker login -u admin -p $CI_JOB_PASSWORD 10.191.6.39:8085
     - docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:$VERSION
     - |
-      if [ "$CI_COMMIT_TAG" ] || [ "$PUSH_LATEST" = "true" ] || [ "$CI_PIPELINE_SOURCE" = "merge_request_event" ]; then
+      if [ "$CI_COMMIT_TAG" ] || [ "$PUSH_LATEST" = "true" ] || [ "$CI_PIPELINE_SOURCE" = "push" ]; then
         docker tag 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:$VERSION 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:latest
         docker push 10.191.6.39:8085/ycopilot-v2/ycopilot-manage:latest
         echo "Pushed latest tag for frontend"
@@ -125,7 +125,7 @@ build-frontend:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE != "web"
       <<: *frontend_changes
     # MR 中前端文件变更
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       <<: *frontend_changes
   tags:
     - yCopilot
@@ -188,7 +188,7 @@ deploy-backend-auto:
     - ./deploy.sh backend
   rules:
     # main分支推送且后端文件变更时自动部署
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
       <<: *backend_changes
   dependencies:
     - build-core
@@ -204,7 +204,7 @@ deploy-frontend-auto:
     - ./deploy.sh  frontend
   rules:
     # main分支推送且前端文件变更时自动部署
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
       <<: *frontend_changes
   dependencies:
     - build-frontend
