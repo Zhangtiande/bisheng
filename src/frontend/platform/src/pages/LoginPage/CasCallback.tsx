@@ -3,6 +3,7 @@ import { captureAndAlertRequestErrorHoc } from "@/controllers/request";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import lodash from "lodash";
 
 /**
  * CAS回调处理组件
@@ -25,28 +26,35 @@ export const CasCallback = () => {
             return;
         }
 
-        // 验证CAS票据
-        verifyCasTicketApi(ticket)
-            .then((response) => {
-                if (response && response.access_token) {
-                    document.cookie = `access_token_cookie=${response.access_token}; path=/;  SameSite=Lax`;
-                    document.cookie = `refresh_token_cookie=${response.refresh_token}; path=/;  SameSite=Lax`;
+        // 使用lodash防抖函数防止重复调用
+        const debouncedVerifyTicket = lodash.debounce((ticketParam: string) => {
+            setIsVerifying(true);
+            // 验证CAS票据
+            verifyCasTicketApi(ticketParam)
+                .then((response) => {
+                    if (response && response.access_token) {
+                        document.cookie = `access_token_cookie=${response.access_token}; path=/;  SameSite=Lax`;
+                        document.cookie = `refresh_token_cookie=${response.refresh_token}; path=/;  SameSite=Lax`;
+                    } 
                     localStorage.setItem('isLogin', '1');
-
                     const path = location.href.indexOf('from=workspace') === -1 ? '' : '/workspace/';
                     const redirectUrl = path ? location.origin + path : '/';
-
                     setStatus('success');
                     location.href = redirectUrl;
-                } else {
-                    throw new Error('Invalid response format');
-                }
-            })
-            .catch((error) => {
-                setStatus('error');
-                setErrorMessage(typeof error === 'string' ? error : (error.message || t('login.authenticationFailed')));
-                setIsVerifying(false);
-            });
+                })
+                .catch((error) => {
+                    setStatus('error');
+                    setErrorMessage(typeof error === 'string' ? error : (error.message || t('login.authenticationFailed')));
+                    setIsVerifying(false);
+                });
+        }, 300);
+
+        debouncedVerifyTicket(ticket);
+
+        // 清理函数 
+        return () => {
+            debouncedVerifyTicket.cancel();
+        };
     }, []);
 
     return (

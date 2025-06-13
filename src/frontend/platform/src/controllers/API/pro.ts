@@ -91,12 +91,13 @@ export function getSSOurlApi() {
         });
 }
 
+
 /**
  * CAS登录验证
  * 用于处理CAS登录回调，验证票据
  * @param ticket CAS登录后返回的票据
  */
-export const verifyCasTicketApi = (ticket) => {
+export const verifyCasTicketApi = (ticket: string) => {
     return axios.get(`/api/cas/ticket/verify?ticket=${ticket}`);
 };
 
