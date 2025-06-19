@@ -1,6 +1,7 @@
 import uuid
 from uuid import UUID
 from typing import Optional, List
+import json
 
 from bisheng.api.errcode.base import NotFoundError
 from bisheng.api.services.workflow import WorkFlowService
@@ -8,14 +9,16 @@ from bisheng.api.v1.chat import chat_manager
 from bisheng.api.v1.schema.workflow import WorkflowStream, WorkflowEvent, WorkflowEventType
 from bisheng.api.v1.schemas import resp_200
 from bisheng.api.v2.utils import get_default_operator
+from bisheng.api.services.user_service import get_login_user, UserPayload
 from bisheng.chat.types import WorkType
 from bisheng.database.models.flow import FlowDao, FlowType
 from bisheng.worker.workflow.redis_callback import RedisCallback
 from bisheng.worker.workflow.tasks import execute_workflow
 from bisheng.workflow.common.workflow import WorkflowStatus
-from fastapi import APIRouter, Request, Body, Path, WebSocket, WebSocketException
+from fastapi import APIRouter, Request, Body, Path, WebSocket, WebSocketException, Depends
 from fastapi import status as http_status
 from fastapi.responses import ORJSONResponse
+from fastapi_jwt_auth import AuthJWT
 from loguru import logger
 from starlette.responses import StreamingResponse
 
@@ -28,8 +31,8 @@ async def invoke_workflow(request: Request,
                           stream: Optional[bool] = Body(default=True, description='是否流式调用'),
                           user_input: Optional[dict] = Body(default=None, description='用户输入', alias='input'),
                           message_id: Optional[int] = Body(default=None, description='消息ID'),
-                          session_id: Optional[str] = Body(default=None, description='会话ID,一次workflow调用的唯一标识')):
-    login_user = get_default_operator()
+                          session_id: Optional[str] = Body(default=None, description='会话ID,一次workflow调用的唯一标识'),
+                          login_user: UserPayload = Depends(get_login_user)):
     workflow_id = workflow_id.hex
 
     # 解析出chat_id和unique_id
@@ -104,9 +107,9 @@ async def invoke_workflow(request: Request,
 @router.post('/stop')
 async def stop_workflow(request: Request,
                         workflow_id: UUID = Body(..., description='工作流唯一ID'),
-                        session_id: str = Body(description='会话ID,一次workflow调用的唯一标识')):
+                        session_id: str = Body(description='会话ID,一次workflow调用的唯一标识'),
+                        login_user: UserPayload = Depends(get_login_user)):
     workflow_id = workflow_id.hex
-    login_user = get_default_operator()
     chat_id = session_id.split('_', 1)[0]
     unique_id = session_id
     workflow = RedisCallback(unique_id, workflow_id, chat_id, str(login_user.user_id))
@@ -117,13 +120,14 @@ async def stop_workflow(request: Request,
 async def workflow_ws(*,
                       workflow_id: UUID = Path(..., description='工作流唯一ID'),
                       websocket: WebSocket,
-                      chat_id: Optional[str] = None):
+                      chat_id: Optional[str] = None,
+                      Authorize: AuthJWT = Depends()):
     """ 免登录链接使用 """
     try:
         workflow_id = workflow_id.hex
-        # Authorize.jwt_required(auth_from='websocket', websocket=websocket)
-        # payload = Authorize.get_jwt_subject()
-        login_user = get_default_operator()
+        Authorize.jwt_required(auth_from='websocket', websocket=websocket)
+        payload = Authorize.get_jwt_subject()
+        login_user = UserPayload(**json.loads(payload))
         await chat_manager.dispatch_client(websocket, workflow_id, chat_id, login_user, WorkType.WORKFLOW, websocket)
     except WebSocketException as exc:
         logger.error(f'Websocket exception: {str(exc)}')
