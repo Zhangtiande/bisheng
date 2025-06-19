@@ -16,6 +16,7 @@ from bisheng.api.services import knowledge_imp
 from bisheng.api.services.knowledge import KnowledgeService
 from bisheng.api.services.knowledge_imp import add_qa, QA_save_knowledge
 from bisheng.api.services.user_service import UserPayload, get_login_user
+from bisheng.api.v1 import tag
 from bisheng.api.v1.schemas import (KnowledgeFileProcess, PreviewFileChunk, UpdatePreviewFileChunk, UploadFileResponse,
                                     resp_200, resp_500)
 from bisheng.cache.utils import save_uploaded_file
@@ -98,7 +99,7 @@ async def process_knowledge_file(*,
     return resp_200(res)
 
 
-@router.post('/create')
+@router.post('/create', tags=["yCopilot"])
 def create_knowledge(*,
                      request: Request,
                      login_user: UserPayload = Depends(get_login_user),
