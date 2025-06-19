@@ -4,7 +4,8 @@ from typing import Annotated, List
 
 from fastapi import APIRouter, Body, HTTPException, Depends
 from sqlmodel import select
-
+from bisheng.api.services.OSS.storage_factory import decide_object_storage
+from bisheng.database.models.knowledge import Knowledge
 from bisheng.api.services.user_service import get_login_user
 from bisheng.api.v1.schemas import UnifiedResponseModel, resp_200
 from bisheng.database.base import session_getter
@@ -57,6 +58,23 @@ def get_original_file(*, message_id: Annotated[int, Body(embed=True)],
     # keywords
     keywords = keys.split(';') if keys else []
     result = []
+
+    
+    # 按知识库ID分组文件
+    knowledge_keys = []
+    for file in db_knowledge_files:
+        knowledge_id = file.knowledge_id
+        if knowledge_id not in knowledge_keys:
+            knowledge_keys.append(knowledge_id)
+    
+    # 为每个知识库创建对应的存储客户端
+    storage_clients = {}
+    for knowledge_id in knowledge_keys:
+        with session_getter() as session:
+            knowledge = session.exec(
+                select(Knowledge).where(Knowledge.id == knowledge_id)).first()
+        if knowledge:
+            storage_clients[knowledge_id] = decide_object_storage(knowledge)
     minio_client = MinioClient()
     for index, chunk in enumerate(chunks):
         file = id2file.get(chunk.file_id)
@@ -65,8 +83,12 @@ def get_original_file(*, message_id: Annotated[int, Body(embed=True)],
         chunk_res['right'] = file_access
         if file_access and file:
             chunk_res['source_url'] = minio_client.get_share_link(str(chunk.file_id))
-            chunk_res['original_url'] = minio_client.get_share_link(
-                file.object_name if file.object_name else str(file.id))
+            storage_client = storage_clients.get(file.knowledge_id)
+            if storage_client:
+                chunk_res['original_url'] = storage_client.get_share_link(file)
+            else:
+                chunk_res['original_url'] = minio_client.get_share_link(
+                    file.object_name if file.object_name else str(file.id))
             chunk_res['source'] = file.file_name
         else:
             chunk_res['source_url'] = ''

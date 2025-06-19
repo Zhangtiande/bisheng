@@ -5,6 +5,8 @@ from typing import Any, Dict, List, Optional
 
 import requests
 from bisheng.api.errcode.knowledge import KnowledgeSimilarError
+from bisheng.api.services.OSS.base_oss import BaseObjectStorage
+from bisheng.api.services.OSS.storage_factory import decide_object_storage
 from bisheng.api.services.handler.impl.xls_split_handle import XlsSplitHandle
 from bisheng.api.services.handler.impl.xlsx_split_handle import XlsxSplitHandle
 from bisheng.api.services.llm import LLMService
@@ -13,7 +15,7 @@ from bisheng.api.v1.schemas import FileProcessBase
 from bisheng.cache.redis import redis_client
 from bisheng.cache.utils import file_download
 from bisheng.database.base import session_getter
-from bisheng.database.models.knowledge import Knowledge, KnowledgeDao
+from bisheng.database.models.knowledge import Knowledge, KnowledgeDao, StorageTypeEnum
 from bisheng.database.models.knowledge_file import (KnowledgeFile, KnowledgeFileDao,
                                                     KnowledgeFileStatus, ParseType, QAKnoweldgeDao,
                                                     QAKnowledge, QAKnowledgeUpsert, QAStatus)
@@ -199,15 +201,16 @@ def delete_knowledge_file_vectors(file_ids: List[int], clear_minio: bool = True)
         res = vectore_client.col.delete(f"pk in {[p['pk'] for p in pk]}", timeout=10)
         logger.info(f'act=delete_vector file_id={file_ids} res={res}')
     vectore_client.close_connection(vectore_client.alias)
-
     for file in knowledge_files:
         # mino
         if clear_minio:
+            object_storage = decide_object_storage(knowledgeid_dict.get(file.knowledge_id))
             # minio
-            minio = MinioClient()
-            minio.delete_minio(str(file.id))
-            if file.object_name:
-                minio.delete_minio(str(file.object_name))
+            # minio = MinioClient()
+            # minio.delete_minio(str(file.id))
+            # if file.object_name:
+            #     minio.delete_minio(str(file.object_name))
+            object_storage.delete_file(file)
 
         knowledge = knowledgeid_dict.get(file.knowledge_id)
         # elastic
@@ -276,6 +279,9 @@ def addEmbedding(collection_name: str,
                  preview_cache_keys: List[str] = None):
     """  将文件加入到向量和es库内  """
 
+    knowledge = KnowledgeDao.query_by_id(knowledge_id)
+    object_storage = decide_object_storage(knowledge)
+
     logger.info('start process files')
     minio_client = MinioClient()
     embeddings = decide_embeddings(model)
@@ -303,7 +309,8 @@ def addEmbedding(collection_name: str,
                                chunk_size,
                                chunk_overlap,
                                extra_meta=extra_meta,
-                               preview_cache_key=preview_cache_key)
+                               preview_cache_key=preview_cache_key,
+                               object_storage=object_storage)
             db_file.status = KnowledgeFileStatus.SUCCESS.value
         except Exception as e:
             logger.exception(
@@ -332,10 +339,14 @@ def add_file_embedding(vector_client,
                        chunk_size: int,
                        chunk_overlap: int,
                        extra_meta: str = None,
-                       preview_cache_key: str = None):
+                       preview_cache_key: str = None,
+                       object_storage: BaseObjectStorage = None):
     # download original file
     logger.info(f'start download original file={db_file.id} file_name={db_file.file_name}')
-    if db_file.object_name.startswith('tmp'):
+    if object_storage.storage_type != StorageTypeEnum.MINIO.value:
+        file_url = object_storage.get_share_link(db_file)
+        filepath, _ = file_download(file_url)
+    elif db_file.object_name.startswith('tmp'):
         file_url = minio_client.get_share_link(db_file.object_name, minio_client.tmp_bucket)
         filepath, _ = file_download(file_url)
 
@@ -388,10 +399,15 @@ def add_file_embedding(vector_client,
 
     logger.info(f'chunk_split file={db_file.id} file_name={db_file.file_name} size={len(texts)}')
     for metadata in metadatas:
+        file_extra = extra_meta or {}
+        if db_file.extra_meta:
+            tmp_json = json.loads(db_file.extra_meta)
+            if tmp_json.get('node_id'):
+                file_extra['node_id'] = tmp_json['node_id']
         metadata.update({
             'file_id': db_file.id,
             'knowledge_id': f'{db_file.knowledge_id}',
-            'extra': extra_meta or ''
+            'extra': json.dumps(file_extra, ensure_ascii=False) or ''
         })
 
     logger.info(f'add_vectordb file={db_file.id} file_name={db_file.file_name}')

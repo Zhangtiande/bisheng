@@ -4,6 +4,7 @@ from typing import List, Any
 
 from bisheng.api.services.llm import LLMService
 from bisheng.chat.types import IgnoreException
+from bisheng.database.models.knowledge import KnowledgeDao
 from bisheng.database.models.user import UserDao
 from bisheng.interface.importing.utils import import_vectorstore
 from bisheng.interface.initialize.loading import instantiate_vectorstore
@@ -73,6 +74,11 @@ class RagNode(BaseNode):
         self.init_milvus()
         self.init_es()
 
+        knowledges = []
+        if self._knowledge_type == 'knowledge':
+            for one in self._knowledge_value:
+                knowledges.append(KnowledgeDao.query_by_id(one))
+
         retriever = BishengRetrievalQA.from_llm(
             llm=self._llm,
             vector_store=self._milvus,
@@ -81,6 +87,10 @@ class RagNode(BaseNode):
             max_content=self._max_chunk_size,
             sort_by_source_and_index=self._sort_chunks,
             return_source_documents=True,
+            cms_validate={
+                'user': self._user_info,
+                'knowledges': knowledges
+            }
         )
         user_questions = self.init_user_question()
         ret = {}
