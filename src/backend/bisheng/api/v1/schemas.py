@@ -520,6 +520,7 @@ class UpdatePreviewFileChunk(BaseModel):
 
 class KnowledgeFileOne(BaseModel):
     file_path: str = Field(..., description='文件路径')
+    extra_data: Optional[dict] = Field(default=None, description='附加信息，针对CMS2和CMS3的文件处理，node_id')
 
 
 # 知识库文件处理

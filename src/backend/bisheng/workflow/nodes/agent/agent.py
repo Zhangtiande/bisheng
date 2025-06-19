@@ -10,6 +10,7 @@ from loguru import logger
 from bisheng.api.services.assistant_agent import AssistantAgent
 from bisheng.api.services.llm import LLMService
 from bisheng.database.models.knowledge import KnowledgeDao, Knowledge
+from bisheng.database.models.user import UserDao
 from bisheng.interface.importing.utils import import_vectorstore
 from bisheng.interface.initialize.loading import instantiate_vectorstore
 from bisheng.utils.embedding import decide_embeddings
@@ -158,6 +159,9 @@ class AgentNode(BaseNode):
                 vector_client = self.init_file_milvus(file_metadata)
                 es_client = self.init_file_es(file_metadata)
 
+            user = UserDao.get_user(self.user_id)
+            knowledge = KnowledgeDao.query_by_id(knowledge_id)
+
             tool_params = {
                 'bisheng_rag': {
                     'name': name,
@@ -165,6 +169,10 @@ class AgentNode(BaseNode):
                     'vector_store': vector_client,
                     'keyword_store': es_client,
                     'llm': self._llm,
+                    "cms_validate": {
+                        "user": user,
+                        "knowledges": [knowledge]
+                    },
                     **knowledge_retriever
                 }
             }

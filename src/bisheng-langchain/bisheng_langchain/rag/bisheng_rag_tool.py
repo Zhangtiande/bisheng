@@ -20,7 +20,10 @@ from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import BaseTool, Tool
 from langchain_core.vectorstores import VectorStoreRetriever
 from loguru import logger
-
+# Prepare request data
+import requests
+import base64
+import json
 
 class MultArgsSchemaTool(Tool):
 
@@ -142,6 +145,9 @@ class BishengRAGTool:
                 prompt = import_class(f'bisheng_langchain.rag.prompts.{prompt_type}')
             else:
                 prompt = None
+
+        self.cms_validate = kwargs.get('cms_validate', None)
+
         self.prompt_inputs = prompt.input_variables
         self.qa_chain = create_stuff_documents_chain(llm=self.llm, prompt=prompt)
 
@@ -229,12 +235,162 @@ class BishengRAGTool:
             logger.info('sort chunks by source and chunk_index')
             docs = sorted(docs, key=lambda x: (x.metadata['source'], x.metadata['chunk_index']))
         return docs
+    
+    def permission_validate(self, user, knowledges, docs):
+        """
+        cms validate
+        """
+        user_name = user.user_name
+        # Group documents by knowledge_id
+        knowledge_groups = {}
+        for doc in docs:
+            knowledge_id = doc.metadata.get("knowledge_id")
+            if knowledge_id not in knowledge_groups:
+                knowledge_groups[knowledge_id] = []
+            knowledge_groups[knowledge_id].append(doc)
+        for doc in docs:
+            doc.metadata["right"] = False
+            doc.metadata["origin_context"] = doc.page_content
+            doc.page_content = (
+                f"file {doc.metadata.get('source', '')} is not accessible"
+            )
+        if not user_name:
+            return docs
+        for doc in docs:
+            extra = doc.metadata.get("extra", "{}")
+            if extra and extra != "{}" and extra != "":
+                tmp_json = json.loads(extra)
+                doc.metadata["node_id"] = tmp_json.get("node_id")
+
+        # 按知识库分组进行权限验证
+        for knowledge_id, group_docs in knowledge_groups.items():
+            # 找到对应的知识库对象
+            knowledge = None
+            for k in knowledges:
+                if str(k.id) == knowledge_id:
+                    knowledge = k
+                    break
+
+            if not knowledge:
+                continue
+
+            if knowledge.storage_type == 0:
+                for doc in group_docs:
+                    doc.metadata["right"] = True
+                    doc.page_content = doc.metadata["origin_context"]
+            elif knowledge.storage_type == 1:  # CMS 2.0
+                # CMS2 权限验证
+                storage_config = knowledge.storage_config
+                host = storage_config.get("host")
+                port = storage_config.get("port")
+                if not host or not port:
+                    continue
+                URL = f"http://{host}:{port}/alfresco/s/a1share/common/node/listnodev2"
+                # Extract document IDs from docs
+                doc_ids = []
+                for doc in group_docs:
+                    # Assuming document ID is stored in metadata
+                    doc_id = doc.metadata.get("node_id")
+                    if doc_id:
+                        doc_ids.append(doc_id)
+
+                if not doc_ids:
+                    continue
+                default_password = storage_config.get("default_password", "")
+                if not default_password:
+                    continue
+                auth_base64 = base64.b64encode(
+                    f"{user_name}:{default_password}".encode()
+                ).decode()
+                headers = {
+                    "Content-Type": "application/json",
+                    "Authorization": f"Basic {auth_base64}",
+                }
+
+                doc_ids_str = "' OR ID:'workspace://SpacesStore/".join(doc_ids)
+                data = {
+                    "nodeRef": "sites",
+                    "query": f"ID:'workspace://SpacesStore/{doc_ids_str}'",
+                    "page": 1,
+                    "rows": 1000,
+                }
+
+                try:
+                    response = requests.post(
+                        URL, headers=headers, data=json.dumps(data)
+                    )
+                    response.raise_for_status()
+                    response_data = response.json()
+                    if response_data.get("data"):
+                        # Get accessible document IDs
+                        accessible_docs = [
+                            res_doc["nodeRef"].split("/")[-1]
+                            for res_doc in response_data["data"]
+                        ]
+                        # Filter docs based on permissions
+                        for doc in group_docs:
+                            doc_id = doc.metadata.get("node_id")
+                            if doc_id in accessible_docs:
+                                doc.metadata["right"] = True
+                                doc.page_content = doc.metadata["origin_context"]
+                            else:
+                                doc.metadata["right"] = False
+                                doc.page_content = "Permission denied"
+                except Exception as e:
+                    logger.error(f"CMS2 permission check error: {e}")
+            elif knowledge.storage_type == 2:  # CMS 3.0
+                # CMS3 权限验证
+                storage_config = knowledge.storage_config
+                host = storage_config.get("host")
+                port = storage_config.get("port")
+                if not host or not port:
+                    continue
+                URL = f"http://{host}:{port}/alfresco/s/sharepm/netdisk/checkPermission"
+                # Extract document IDs from docs
+                doc_ids = []
+                for doc in group_docs:
+                    doc_id = doc.metadata.get("node_id")
+                    if doc_id:
+                        doc_ids.append(doc_id)
+
+                if not doc_ids:
+                    continue
+
+                headers = {
+                    "Content-Type": "application/json",
+                }
+
+                data = {"docIds": doc_ids, "user": user_name}
+
+                try:
+                    response = requests.post(
+                        URL, headers=headers, data=json.dumps(data)
+                    )
+                    response.raise_for_status()
+                    response_data = response.json()
+                    if response.status_code == 200 and response_data.get("data"):
+                        accessible_doc_ids = response_data["data"]
+                        # Set cms_validate based on permissions
+                        for doc in group_docs:
+                            doc_id = doc.metadata.get("node_id")
+                            if doc_id in accessible_doc_ids:
+                                doc.metadata["right"] = True
+                                doc.page_content = doc.metadata["origin_context"]
+                            else:
+                                doc.metadata["right"] = False
+                                doc.page_content = "Permission denied"
+                except Exception as e:
+                    logger.error(f"CMS3 permission check error: {e}")
+
+        return docs
 
     def run(self,
             query,
             return_only_outputs=True,
             run_manager: Optional[CallbackManagerForChainRun] = None) -> Any:
         docs = self.retrieval_and_rerank(query)
+        if self.cms_validate:
+            docs = self.permission_validate(self.cms_validate['user'], self.cms_validate['knowledges'], docs)
         try:
             kwargs = {}
             if run_manager:

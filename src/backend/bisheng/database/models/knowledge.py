@@ -38,15 +38,10 @@ class StorageConfig:
             return False
         
         # Common required fields for both CMS 2.0 and 3.0
-        required_fields = ['username', 'password', 'host', 'port', 'siteShortName']
+        required_fields = ["username", "password", "host", "port"]
         
         for field in required_fields:
             if field not in config or not config[field]:
-                return False
-        
-        # CMS 2.0 requires additional rootNodeRef field
-        if storage_type == StorageTypeEnum.CMS_2_0.value:
-            if 'rootNodeRef' not in config or not config['rootNodeRef']:
                 return False
         
         return True
@@ -62,7 +57,6 @@ class StorageConfig:
                 'password': '',
                 'host': '',
                 'port': '',
-                'siteShortName': '',
                 'rootNodeRef': ''
             }
         elif storage_type == StorageTypeEnum.CMS_3_0.value:
@@ -71,7 +65,8 @@ class StorageConfig:
                 'password': '',
                 'host': '',
                 'port': '',
-                'siteShortName': ''
+                'siteShortName': '',
+                'rootNodeRef': ''
             }
         return None
 

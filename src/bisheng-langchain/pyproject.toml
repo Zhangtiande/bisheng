@@ -1,0 +1,60 @@
+[project]
+authors = [
+    {name = "Dataelement", email = "hanfeng@dataelem.com"},
+]
+maintainers = [
+    {name = "hanfeng", email = "hanfeng@dataelem.com"},
+]
+license = {text = "Apache 2.0"}
+requires-python = "<3.11,>=3.10"
+dependencies = [
+    "bisheng-pyautogen>=0.3.2",
+    "bisheng-ragas==1.*",
+    "elasticsearch<9.0.0,>=8.9.0",
+    "filetype==1.2.0",
+    "jieba==0.42.1",
+    "langchain==0.3.*",
+    "langchain-openai==0.3.*",
+    "langgraph==0.3.*",
+    "llama-index==0.9.48",
+    "openai==1.*",
+    "opencv-python==4.5.5.64",
+    "pillow==9.5.0",
+    "pydantic>=2.11.7",
+    "pymupdf==1.23.8",
+    "shapely==2.0.2",
+    "websocket-client>=1.8.0",
+    "zhipuai==1.0.7",
+]
+name = "bisheng-langchain"
+version = "1.2.1"
+description = "A Python package with a built-in web application"
+readme = "README.md"
+keywords = [
+    "nlp",
+    "langchain",
+    "openai",
+    "gpt",
+    "gui",
+]
+
+[project.urls]
+repository = "https://github.com/dataelement/bisheng"
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra"
+testpaths = ["tests", "integration"]
+console_output_style = "progress"
+filterwarnings = ["ignore::DeprecationWarning"]
+log_cli = true
+
+
+[tool.ruff]
+line-length = 120
+
+[[tool.uv.index]]
+url = "https://mirrors.ustc.edu.cn/pypi/simple"
+default = true
+publish-url = "http://10.191.6.39:8083/repository/Pypi/"
