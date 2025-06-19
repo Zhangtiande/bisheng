@@ -19,6 +19,8 @@ import DiffFlowPage from "./pages/DiffFlowPage";
 import EvaluatingPage from "./pages/EvaluationPage";
 import EvaluatingCreate from "./pages/EvaluationPage/EvaluationCreate";
 import KnowledgePage from "./pages/KnowledgePage";
+import SyncPage from "./pages/KnowledgePage/sync";
+import TimerPage from "./pages/KnowledgePage/timer";
 import FilesPage from "./pages/KnowledgePage/detail";
 import FilesUpload from "./pages/KnowledgePage/filesUpload";
 import QasPage from "./pages/KnowledgePage/qas";
@@ -69,6 +71,8 @@ const privateRouter = [
     children: [
       { path: "", element: <SkillChatPage />, },
       { path: "filelib", element: <KnowledgePage />, permission: 'knowledge', },
+      { path: "filelib/sync", element: <SyncPage />, permission: 'knowledge', },
+      { path: "filelib/timer", element: <TimerPage />, permission: 'knowledge', },
       { path: "filelib/:id", element: <FilesPage />, permission: 'knowledge', },
       { path: "filelib/upload/:id", element: <FilesUpload />, permission: 'knowledge', },
       { path: "filelib/qalib/:id", element: <QasPage />, permission: 'knowledge', },

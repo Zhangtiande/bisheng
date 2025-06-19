@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../../components/bs-ui/button";
-import { Input, SearchInput } from "../../components/bs-ui/input";
+import { Input, PasswordInput, SearchInput } from "../../components/bs-ui/input";
 import {
     Table,
     TableBody,
@@ -25,6 +25,9 @@ import { useToast } from "@/components/bs-ui/toast/use-toast";
 import { getKnowledgeModelConfig, getModelListApi } from "@/controllers/API/finetune";
 import AutoPagination from "../../components/bs-ui/pagination/autoPagination";
 import { useTable } from "../../util/hook";
+import { 
+    Select, SelectContent, SelectGroup, SelectItem, SelectTrigger 
+} from "../../components/bs-ui/select";
 
 function CreateModal({ datalist, open, setOpen, onLoadEnd }) {
     const { t } = useTranslation()
@@ -34,7 +37,16 @@ function CreateModal({ datalist, open, setOpen, onLoadEnd }) {
     const descRef = useRef(null)
     const [modal, setModal] = useState(null)
     const [options, setOptions] = useState([])
-    const [isSubmitting, setIsSubmitting] = useState(false) // 新增loading状态
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    // 新增：知识库类型和相关字段
+    const [libType, setLibType] = useState("default")
+    const [shareFields, setShareFields] = useState({
+        host: "",
+        port: "",
+        rootNodeRef: "",
+        username: "",
+        password: "",
+    })
 
     // Fetch model data
     useEffect(() => {
@@ -69,12 +81,21 @@ function CreateModal({ datalist, open, setOpen, onLoadEnd }) {
     }, [])
 
     const { toast } = useToast()
-    const [error, setError] = useState({ name: false, desc: false })
+    const [error, setError] = useState({ name: false, desc: false, host: false, port: false, rootNodeRef: false, username: false, password: false })
 
     const handleCreate = async () => {
         const name = nameRef.current.value
         const desc = descRef.current.value
         const errorlist = []
+
+        // 新增：重置 share 字段错误
+        let shareFieldErrors = {
+            host: false,
+            port: false,
+            rootNodeRef: false,
+            username: false,
+            password: false,
+        }
 
         if (!name) errorlist.push(t('lib.enterLibraryName'))
         if (name.length > 30) errorlist.push(t('lib.libraryNameLimit'))
@@ -84,15 +105,78 @@ function CreateModal({ datalist, open, setOpen, onLoadEnd }) {
         const nameErrors = errorlist.length
         if (desc.length > 200) errorlist.push(t('lib.descriptionLimit'))
 
-        setError({ name: !!nameErrors, desc: errorlist.length > nameErrors })
+        // 新增：校验 A1-share2.0/A1-share3.0 字段
+        if (libType === "A1-share2.0" || libType === "A1-share3.0") {
+            // host 校验：非空且为合法域名或IP
+            if (!shareFields.host) {
+                errorlist.push("服务器地址不能为空")
+                shareFieldErrors.host = true
+            } else if (!/^([a-zA-Z0-9.-]+|\d{1,3}(\.\d{1,3}){3})$/.test(shareFields.host)) {
+                errorlist.push("服务器地址格式不正确")
+                shareFieldErrors.host = true
+            }
+            // port 校验：非空且为数字且在1-65535
+            if (!shareFields.port) {
+                errorlist.push("端口不能为空")
+                shareFieldErrors.port = true
+            } else if (!/^\d+$/.test(shareFields.port) || +shareFields.port < 1 || +shareFields.port > 65535) {
+                errorlist.push("端口格式不正确，应为1-65535的数字")
+                shareFieldErrors.port = true
+            }
+            // rootNodeRef 校验：非空且为小写带-的uuid
+            if (!shareFields.rootNodeRef) {
+                errorlist.push("站点ID不能为空")
+                shareFieldErrors.rootNodeRef = true
+            } else if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(shareFields.rootNodeRef)) {
+                errorlist.push("站点ID格式不正确，必须为小写带-的UUID，例如 76ef8c95-xxxx-xxxx-xxxx-8ab1eabe574d")
+                shareFieldErrors.rootNodeRef = true
+            }
+            // username 校验：非空
+            if (!shareFields.username) {
+                errorlist.push("用户名不能为空")
+                shareFieldErrors.username = true
+            }
+            // password 校验：非空
+            if (!shareFields.password) {
+                errorlist.push("密码不能为空")
+                shareFieldErrors.password = true
+            }
+        }
+
+        setError({
+            name: !!nameErrors,
+            desc: errorlist.length > nameErrors,
+            ...shareFieldErrors
+        })
         if (errorlist.length) return handleError(errorlist)
 
-        setIsSubmitting(true)  // 开始提交
+        setIsSubmitting(true)
+        // 新增 storage_type 和 storage_config 字段
+        let storage_type = 0
+        let storage_config = undefined
+        if (libType === "A1-share2.0") {
+            storage_type = 1
+        } else if (libType === "A1-share3.0") {
+            storage_type = 2
+        }
+        if (libType === "A1-share2.0" || libType === "A1-share3.0") {
+            storage_config = {
+                host: shareFields.host,
+                port: shareFields.port,
+                rootNodeRef: shareFields.rootNodeRef,
+                password: shareFields.password,
+                username: shareFields.username,
+            }
+        }
+
         await captureAndAlertRequestErrorHoc(createFileLib({
             name,
             description: desc,
             model: modal[1].value,
-            type: 0
+            type: 0,
+            libType,
+            storage_type,
+            ...(storage_config ? { storage_config } : {}),
         }).then(res => {
             // @ts-ignore
             window.libname = [name, desc]
@@ -120,6 +204,80 @@ function CreateModal({ datalist, open, setOpen, onLoadEnd }) {
                     <label htmlFor="name" className="bisheng-label">{t('lib.libraryName')}</label>
                     <Input name="name" ref={nameRef} placeholder={t('lib.libraryName')} className={`col-span-3 ${error.name && 'border-red-400'}`} />
                 </div>
+                {/* 新增：知识库类型选择*/}
+                <div>
+                    <label className="bisheng-label">知识库类型</label>
+                    <Select value={libType} onValueChange={setLibType}>
+                        <SelectTrigger className="col-span-3">
+                            {{
+                                "default": "default",
+                                "A1-share2.0": "A1-share2.0",
+                                "A1-share3.0": "A1-share3.0"
+                            }[libType] || "请选择类型"}
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="default">default</SelectItem>
+                                <SelectItem value="A1-share2.0">A1-share2.0</SelectItem>
+                                <SelectItem value="A1-share3.0">A1-share3.0</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div>
+                {/* 新增：A1-share2.0/A1-share3.0字段 */}
+                {(libType === "A1-share2.0" || libType === "A1-share3.0") && (
+                    <div className="flex flex-col gap-4">
+                        <div className="flex gap-4">
+                            <div className="flex-[2]">
+                                <label className="bisheng-label">服务器</label>
+                                <Input
+                                    value={shareFields.host}
+                                    onChange={e => setShareFields(f => ({ ...f, host: e.target.value }))}
+                                    placeholder="服务器地址"
+                                    className={`col-span-3 ${error.host && 'border-red-400'}`}
+                                />
+                            </div>
+                            <div className="flex-[1]">
+                                <label className="bisheng-label">端口</label>
+                                <Input
+                                    value={shareFields.port}
+                                    onChange={e => setShareFields(f => ({ ...f, port: e.target.value }))}
+                                    placeholder="80"
+                                    className={`col-span-3 ${error.port && 'border-red-400'}`}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="bisheng-label">站点ID</label>
+                            <Input
+                                value={shareFields.rootNodeRef}
+                                onChange={e => setShareFields(f => ({ ...f, rootNodeRef: e.target.value }))}
+                                placeholder="站点ID"
+                                className={`col-span-3 ${error.rootNodeRef && 'border-red-400'}`}
+                            />
+                        </div>
+                        <div className="flex gap-4">
+                            <div className="flex-1">
+                                <label className="bisheng-label">用户名</label>
+                                <Input
+                                    value={shareFields.username}
+                                    onChange={e => setShareFields(f => ({ ...f, username: e.target.value }))}
+                                    placeholder="用户名"
+                                    className={`col-span-3 ${error.username && 'border-red-400'}`}
+                                />
+                            </div>
+                            <div className="flex-1">
+                                <label className="bisheng-label">密码</label>
+                                <PasswordInput
+                                    value={shareFields.password}
+                                    onChange={e => setShareFields(f => ({ ...f, password: e.target.value }))}
+                                    placeholder="密码"
+                                    className={`col-span-3 ${error.password && 'border-red-400'}`}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
                 <div className="">
                     <label htmlFor="name" className="bisheng-label">{t('lib.description')}</label>
                     <Textarea id="desc" ref={descRef} placeholder={t('lib.description')} className={`col-span-3 ${error.desc && 'border-red-400'}`} />
@@ -239,6 +397,8 @@ export default function KnowledgeFile() {
             <div className="h-[calc(100vh-128px)] overflow-y-auto pb-20">
                 <div className="flex justify-end gap-4 items-center absolute right-0 top-[-44px]">
                     <SearchInput placeholder="知识库或文件名称" onChange={(e) => search(e.target.value)} />
+                    <Link to='/filelib/sync'><Button variant="outline" className="px-8">同步</Button></Link>
+                    <Link to='/filelib/timer'><Button variant="outline" className="px-8">定时</Button></Link>
                     <Button className="px-8 text-[#FFFFFF]" onClick={() => setOpen(true)}>{t('create')}</Button>
                 </div>
                 <Table>
