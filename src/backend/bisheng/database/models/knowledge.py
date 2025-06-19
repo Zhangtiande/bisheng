@@ -25,51 +25,6 @@ class StorageTypeEnum(Enum):
     CMS_3_0 = 2
 
 
-class StorageConfig:
-    """Storage configuration helper class"""
-    
-    @staticmethod
-    def validate_cms_config(storage_type: int, config: Dict[str, Any]) -> bool:
-        """Validate CMS storage configuration"""
-        if storage_type == StorageTypeEnum.MINIO.value:
-            return True  # No validation needed for MINIO
-        
-        if not config:
-            return False
-        
-        # Common required fields for both CMS 2.0 and 3.0
-        required_fields = ["username", "password", "host", "port"]
-        
-        for field in required_fields:
-            if field not in config or not config[field]:
-                return False
-        
-        return True
-    
-    @staticmethod
-    def get_default_config(storage_type: int) -> Optional[Dict[str, Any]]:
-        """Get default configuration template for storage type"""
-        if storage_type == StorageTypeEnum.MINIO.value:
-            return None
-        elif storage_type == StorageTypeEnum.CMS_2_0.value:
-            return {
-                'username': '',
-                'password': '',
-                'host': '',
-                'port': '',
-                'rootNodeRef': ''
-            }
-        elif storage_type == StorageTypeEnum.CMS_3_0.value:
-            return {
-                'username': '',
-                'password': '',
-                'host': '',
-                'port': '',
-                'siteShortName': '',
-                'rootNodeRef': ''
-            }
-        return None
-
 
 class KnowledgeBase(SQLModelSerializable):
     user_id: Optional[int] = Field(default=None, index=True)
@@ -92,21 +47,6 @@ class KnowledgeBase(SQLModelSerializable):
     def convert_model(cls, v: Any) -> str:
         if isinstance(v, int):
             v = str(v)
-        return v
-
-    @field_validator('storage_config', mode='before')
-    @classmethod
-    def validate_storage_config(cls, v: Any, info) -> Optional[Dict[str, Any]]:
-        if v is None:
-            return v
-        
-        # Get storage_type from the data being validated
-        storage_type = info.data.get('storage_type', 0) if hasattr(info, 'data') and info.data else 0
-        
-        # Validate configuration based on storage type
-        if not StorageConfig.validate_cms_config(storage_type, v):
-            raise ValueError(f"Invalid storage configuration for storage type {storage_type}")
-        
         return v
 
 

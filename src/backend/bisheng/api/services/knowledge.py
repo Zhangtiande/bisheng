@@ -133,6 +133,8 @@ class KnowledgeService(KnowledgeUtils):
                 db_knowledge.collection_name = f'col_{int(time.time())}_{generate_uuid()[:8]}'
         db_knowledge.index_name = f'col_{int(time.time())}_{generate_uuid()[:8]}'
 
+        decide_object_storage(db_knowledge)
+
         # 插入到数据库
         db_knowledge.user_id = login_user.user_id
         db_knowledge = KnowledgeDao.insert_one(db_knowledge)

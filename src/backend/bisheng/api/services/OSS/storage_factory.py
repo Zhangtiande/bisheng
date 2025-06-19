@@ -44,3 +44,17 @@ def decide_object_storage(knowledge: Knowledge) -> BaseObjectStorage:
     
     logger.info(f"Using custom storage for knowledge {knowledge.id}: {storage_type}")
     return create_object_storage(storage_type, config)
+
+def decide_object_storage_by_config(storage_type: int, config: dict) -> BaseObjectStorage:
+    """根据知识库配置决定使用哪种对象存储
+
+    Args:
+        storage_type: 存储类型
+        config: 存储配置
+
+    Returns:
+        BaseObjectStorage: 对象存储实例
+    """
+    # 如果知识库配置了特定的存储，使用特定配置
+    logger.info(f"Using custom storage for knowledge {config.get('id')}: {storage_type}")
+    return create_object_storage(storage_type, config)
