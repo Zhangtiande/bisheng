@@ -8,6 +8,7 @@ from typing import Any, Dict, List
 from bisheng.api.errcode.base import NotFoundError, UnAuthorizedError, ServerError
 from bisheng.api.errcode.knowledge import (KnowledgeChunkError, KnowledgeExistError,
                                            KnowledgeNoEmbeddingError)
+from bisheng.api.services.OSS.storage_factory import decide_object_storage
 from bisheng.api.services.audit_log import AuditLogService
 from bisheng.api.services.knowledge_imp import (KnowledgeUtils, decide_vectorstores,
                                                 delete_knowledge_file_vectors, process_file_task,
@@ -21,7 +22,7 @@ from bisheng.cache.redis import redis_client
 from bisheng.cache.utils import file_download
 from bisheng.database.models.group_resource import GroupResource, GroupResourceDao, ResourceTypeEnum
 from bisheng.database.models.knowledge import (Knowledge, KnowledgeCreate, KnowledgeDao,
-                                               KnowledgeRead, KnowledgeTypeEnum, KnowledgeUpdate)
+                                               KnowledgeRead, KnowledgeTypeEnum, KnowledgeUpdate, StorageTypeEnum)
 from bisheng.database.models.knowledge_file import (KnowledgeFile, KnowledgeFileDao,
                                                     KnowledgeFileStatus, ParseType)
 from bisheng.database.models.llm_server import LLMDao, LLMModelType
@@ -263,14 +264,13 @@ class KnowledgeService(KnowledgeUtils):
             return
         page_size = 1000
         page_num = math.ceil(count / page_size)
-        minio_client = MinioClient()
+        knowledge = KnowledgeDao.query_by_id(knowledge_id)
+        object_storage = decide_object_storage(knowledge)
         for i in range(page_num):
             file_list = KnowledgeFileDao.get_file_simple_by_knowledge_id(
                 knowledge_id, i + 1, page_size)
             for file in file_list:
-                minio_client.delete_minio(str(file[0]))
-                if file[1]:
-                    minio_client.delete_minio(file[1])
+                object_storage.delete_file(file)
 
     @classmethod
     def get_preview_file_chunk(cls, request: Request, login_user: UserPayload, req_data: PreviewFileChunk) \
@@ -372,7 +372,7 @@ class KnowledgeService(KnowledgeUtils):
         split_rule_dict = req_data.dict(include=FileProcessBase.__fields__.keys())
         for one in req_data.file_list:
             # 上传源文件，创建数据记录
-            db_file = cls.process_one_file(login_user, knowledge, one, split_rule_dict)
+            db_file = cls.process_one_file(login_user, knowledge, one, split_rule_dict, one.extra_data)
             # 不重复的文件数据使用异步任务去执行
             if db_file.status != KnowledgeFileStatus.FAILED.value:
                 # 获取此文件的预览缓存key
@@ -487,6 +487,7 @@ class KnowledgeService(KnowledgeUtils):
             knowledge: Knowledge,
             file_info: KnowledgeFileOne,
             split_rule: Dict,
+            extra_data: Dict = None
     ) -> KnowledgeFile:
         """ 处理上传的文件 """
         minio_client = MinioClient()
@@ -501,6 +502,9 @@ class KnowledgeService(KnowledgeUtils):
                                                              knowledge_id=knowledge.id)
         if content_repeat or name_repeat:
             db_file = content_repeat[0] if content_repeat else name_repeat[0]
+            # 除minio外，其他类型，重复文件依旧处理
+            if knowledge.storage_type != StorageTypeEnum.MINIO.value:
+                return db_file
             old_name = db_file.file_name
             file_type = file_name.rsplit('.', 1)[-1]
             obj_name = f'tmp/{db_file.id}.{file_type}'
@@ -517,13 +521,15 @@ class KnowledgeService(KnowledgeUtils):
                                 file_name=file_name,
                                 md5=md5_,
                                 split_rule=json.dumps(split_rule),
-                                user_id=login_user.user_id)
+                                user_id=login_user.user_id,
+                                extra_meta=json.dumps(extra_data))
         db_file = KnowledgeFileDao.add_file(db_file)
-        # 原始文件保存
-        file_type = db_file.file_name.rsplit('.', 1)[-1]
-        db_file.object_name = f'original/{db_file.id}.{file_type}'
-        res = minio_client.upload_minio(db_file.object_name, filepath)
-        logger.info('upload_original_file path={} res={}', db_file.object_name, res)
+        # 原始文件保存, 除minio外，其他类型各自托管文件，不保存到minio
+        if knowledge.storage_type == StorageTypeEnum.MINIO.value:
+            file_type = db_file.file_name.rsplit('.', 1)[-1]
+            db_file.object_name = f'original/{db_file.id}.{file_type}'
+            res = minio_client.upload_minio(db_file.object_name, filepath)
+            logger.info('upload_original_file path={} res={}', db_file.object_name, res)
         KnowledgeFileDao.update(db_file)
         return db_file
 

@@ -105,7 +105,7 @@ _EXTRA_PARAM_TOOLS: Dict[str, Tuple[Callable[[KwArg(Any)], BaseTool], List[Optio
     'bisheng_code_interpreter': (_get_native_code_interpreter, ["minio"], ['files']),
     'bisheng_rag': (BishengRAGTool.get_rag_tool, ['name', 'description'],
                     ['vector_store', 'keyword_store', 'llm', 'collection_name', 'max_content',
-                     'sort_by_source_and_index']),
+                     'sort_by_source_and_index', 'cms_validate']),
     'sql_agent': (_get_sql_agent, ['llm', 'sql_address'], []),
 }
 

@@ -84,6 +84,7 @@ class BishengRetrievalQA(Chain):
         sort_by_source_and_index: bool = False,
         callbacks: Callbacks = None,
         return_source_documents: bool = False,
+        cms_validate: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> BishengRetrievalQA:
         bisheng_rag_tool = BishengRAGTool(vector_store=vector_store,
@@ -92,6 +93,7 @@ class BishengRetrievalQA(Chain):
                                           QA_PROMPT=QA_PROMPT,
                                           max_content=max_content,
                                           sort_by_source_and_index=sort_by_source_and_index,
+                                          cms_validate=cms_validate,
                                           **kwargs)
         return cls(
             bisheng_rag_tool=bisheng_rag_tool,

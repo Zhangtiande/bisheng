@@ -8,7 +8,7 @@ maintainers = [
 license = {text = "Apache 2.0"}
 requires-python = "<3.11,>=3.10"
 dependencies = [
-    "bisheng-langchain==1.2.0",
+    "bisheng-langchain",
     "bisheng-pyautogen==0.3.2",
     "langchain<1.0.0,>=0.3.23",
     "langchain-community<1.0.0,>=0.3.21",
@@ -133,6 +133,9 @@ testpaths = ["tests", "integration"]
 console_output_style = "progress"
 filterwarnings = ["ignore::DeprecationWarning"]
 log_cli = true
+
+[tool.uv.sources]
+"bisheng-langchain" = { path = "./bisheng_langchain-1.2.1-py3-none-any.whl" }
 
 
 [tool.ruff]
