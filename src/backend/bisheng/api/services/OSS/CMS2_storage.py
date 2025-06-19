@@ -41,31 +41,21 @@ class CMS2Client:
         """获取认证票据"""
         login_url = f"{self.uri}{self.LOGIN_URL}?u={self.username}&pw={self.password}&format=json"
 
-        try:
-            response = RequestHandler.handle_get_request(
-                login_url, 
-                timeout=3,
-                operation_name="CMS2 login"
-            )
-            
-            data = ResponseHelper.extract_json_safely(response, {})
-            if response.status_code == 200:
-                self._ticket = data.get("data", {}).get("ticket")
-                logger.info("CMS2 login success, got ticket")
-            elif response.status_code == 403:
-                raise Exception("知识库用户名或密码错误")
-            else:
-                raise Exception(f"登录失败，状态码: {response.status_code}")
-                
-        except requests.ConnectionError:
-            raise Exception("CMS服务器无响应，请确认url是否正确")
-        except requests.Timeout:
-            raise Exception("CMS服务器响应超时，请检查网络连接")
-        except Exception as e:
-            if "知识库用户名或密码错误" in str(e) or "登录失败" in str(e):
-                raise
-            logger.error(f"CMS2 login failed: {e}")
-            raise Exception("CMS服务器无响应，请确认url是否正确")
+        response = RequestHandler.handle_get_request(
+            login_url, 
+            timeout=3,
+            operation_name="CMS2 login"
+        )
+        
+        data = ResponseHelper.extract_json_safely(response, {})
+        if response.status_code == 200:
+            self._ticket = data.get("data", {}).get("ticket")
+            logger.info("CMS2 login success, got ticket")
+        elif response.status_code == 403:
+            raise Exception("知识库CMS2.0用户名或密码错误")
+        else:
+            raise Exception(f"CMS2.0登录失败，状态码: {response.status_code}")
+     
 
     def delete_node(self, node_id: str) -> bool:
         """删除CMS2节点"""
@@ -87,13 +77,13 @@ class CMS2_0Storage(BaseObjectStorage):
             config: CMS2配置，包含username, password, host, port, siteShortName, rootNodeRef
         """
         self.config = config or {}
-        self.client = self._get_client()
-
         # 验证必要的配置项
         required_fields = ["username", "password", "host", "port", "rootNodeRef"]
         for field in required_fields:
             if field not in self.config or not self.config[field]:
-                raise ValueError(f"CMS2 storage config missing required field: {field}")
+                raise Exception("知识库配置缺少必要字段" + field)
+        self.client = self._get_client()
+
 
     def _get_cms2_uri(self) -> str:
         """构建CMS2的URI"""
@@ -111,8 +101,7 @@ class CMS2_0Storage(BaseObjectStorage):
             self.client.create(self.config, uri)
             logger.info(f"CMS2 client created successfully for {uri}")
         except Exception as e:
-            logger.error(f"Failed to create CMS2 client: {e}")
-            raise
+            raise e
         return self.client
 
     def get_share_link(self, db_file: KnowledgeFile) -> str:

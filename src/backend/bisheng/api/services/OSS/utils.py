@@ -40,16 +40,15 @@ class RequestHandler:
                 headers=headers, 
                 timeout=timeout
             )
-            response.raise_for_status()
             logger.debug(f"{operation_name} success: {response.status_code}")
             return response
             
         except requests.Timeout as e:
             logger.error(f"{operation_name} timeout: {url}, error: {e}")
-            raise requests.Timeout(f"请求超时，请检查网络连接或服务器状态")
+            raise requests.Timeout("请求超时，请检查网络连接或服务器状态")
         except requests.ConnectionError as e:
             logger.error(f"{operation_name} connection error: {url}, error: {e}")
-            raise requests.ConnectionError(f"连接失败，请确认URL是否正确: {url}")
+            raise Exception("连接失败，请确认URL是否正确")
         except requests.HTTPError as e:
             logger.error(f"{operation_name} HTTP error: {response.status_code} - {response.text}")
             raise requests.HTTPError(f"HTTP错误: {response.status_code}")

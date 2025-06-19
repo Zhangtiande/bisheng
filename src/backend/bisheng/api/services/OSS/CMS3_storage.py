@@ -5,7 +5,7 @@ from typing import Dict, Any, Optional
 import requests
 from bisheng.api.services.OSS import BaseObjectStorage
 from bisheng.api.services.OSS.utils import RequestHandler, ResponseHelper
-from bisheng.database.models.knowledge import KnowledgeDao, StorageTypeEnum
+from bisheng.database.models.knowledge import StorageTypeEnum
 from bisheng.database.models.knowledge_file import KnowledgeFile
 from loguru import logger
 
@@ -42,31 +42,22 @@ class CMS3Client:
         """获取认证票据"""
         login_url = f"{self.uri}{self.LOGIN_URL}?u={self.username}&pw={self.password}&format=json"
         
-        try:
-            response = RequestHandler.handle_get_request(
-                login_url, 
-                timeout=3,
-                operation_name="CMS3 login"
-            )
-            
-            data = ResponseHelper.extract_json_safely(response, {})
-            if response.status_code == 200:
-                self._ticket = data.get('data', {}).get('ticket')
-                logger.info("CMS3 login success, got ticket")
-            elif response.status_code == 403:
-                raise Exception("知识库用户名或密码错误")
-            else:
-                raise Exception(f"登录失败，状态码: {response.status_code}")
+        response = RequestHandler.handle_get_request(
+            login_url, 
+            timeout=3,
+            operation_name="CMS3 login"
+        )
+        
+        data = ResponseHelper.extract_json_safely(response, {})
+        if response.status_code == 200:
+            self._ticket = data.get('data', {}).get('ticket')
+            logger.info("CMS3 login success, got ticket")
+        elif response.status_code == 403:
+            raise Exception("知识库CMS3.0用户名或密码错误")
+        else:
+            raise Exception(f"CMS3.0登录失败，状态码: {response.status_code}")
                 
-        except requests.ConnectionError:
-            raise Exception("CMS服务器无响应，请确认url是否正确")
-        except requests.Timeout:
-            raise Exception("CMS服务器响应超时，请检查网络连接")
-        except Exception as e:
-            if "知识库用户名或密码错误" in str(e) or "登录失败" in str(e):
-                raise
-            logger.error(f"CMS3 login failed: {e}")
-            raise Exception("CMS服务器无响应，请确认url是否正确")
+
     
     def delete_node(self, node_id: str) -> bool:
         """删除CMS3节点"""
@@ -118,13 +109,15 @@ class CMS3_0Storage(BaseObjectStorage):
             config: CMS3配置，包含username, password, host, port, siteShortName
         """
         self.config = config or {}
-        self.client = self._get_client()
-        
+
         # 验证必要的配置项
-        required_fields = ['username', 'password', 'host', 'port']
+        required_fields = ["username", "password", "host", "port", "rootNodeRef"]
         for field in required_fields:
             if field not in self.config or not self.config[field]:
-                raise ValueError(f"CMS3 storage config missing required field: {field}")
+                raise Exception("知识库配置缺少必要字段" + field)
+            
+        self.client = self._get_client()
+        
         
     def _get_cms3_uri(self) -> str:
         """构建CMS3的URI"""
@@ -144,7 +137,7 @@ class CMS3_0Storage(BaseObjectStorage):
             logger.info(f"CMS3 client created successfully for {uri}")
         except Exception as e:
             logger.error(f"Failed to create CMS3 client: {e}")
-            raise
+            raise e
         return self.client
 
     def get_share_link(self, db_file: KnowledgeFile) -> str:
