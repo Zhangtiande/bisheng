@@ -22,13 +22,13 @@ RUN apt install vim fonts-wqy-zenhei -y
 # opencv
 RUN apt-get update && apt-get install -y libglib2.0-0 libsm6 libxrender1 libxext6 libgl1
 # RUN curl -sSL https://install.python-poetry.org | python3 - --version 1.8.2
-RUN pip install uv
+RUN pip install uv -i https://mirrors.ustc.edu.cn/pypi/simple
 # # Add Poetry to PATH
 # ENV PATH="${PATH}:/root/.local/bin"
 # # Copy the pyproject.toml and poetry.lock files
 # COPY poetry.lock pyproject.toml ./
 # Copy the rest of the application codes
-COPY ./pyproject.toml uv.lock ./
+COPY ./pyproject.toml uv.lock bisheng_langchain-1.2.1-py3-none-any.whl ./
 RUN uv sync --frozen
 ENV PATH="/app/.venv/bin:$PATH"
 
