@@ -405,8 +405,9 @@ export default function KnowledgeFile() {
                     <TableHeader>
                         <TableRow>
                             <TableHead>{t('lib.knowledgeBaseId')}</TableHead>
-                            <TableHead className="w-[200px]">{t('lib.libraryName')}</TableHead>
+                            <TableHead className="w-[180px]">{t('lib.libraryName')}</TableHead>
                             <TableHead>{t('lib.model')}</TableHead>
+                            <TableHead>类型</TableHead>
                             <TableHead>{t('createTime')}</TableHead>
                             <TableHead>{t('updateTime')}</TableHead>
                             <TableHead>{t('lib.createUser')}</TableHead>
@@ -418,10 +419,17 @@ export default function KnowledgeFile() {
                         {datalist.map((el: any) => (
                             <TableRow key={el.id}>
                                 <TableCell>{el.id}</TableCell>
-                                <TableCell className="font-medium max-w-[200px]">
+                                <TableCell className="font-medium max-w-[180px]">
                                     <div className=" truncate-multiline">{el.name}</div>
                                 </TableCell>
                                 <TableCell>{modelNameMap[el.model] || '--'}</TableCell>
+                                <TableCell>
+                                    {
+                                        el.storage_type === 1 ? "A1-share2.0"
+                                        : el.storage_type === 2 ? "A1-share3.0"
+                                        : "default"
+                                    }
+                                </TableCell>
                                 <TableCell>{el.create_time.replace('T', ' ')}</TableCell>
                                 <TableCell>{el.update_time.replace('T', ' ')}</TableCell>
                                 <TableCell className="max-w-[300px] break-all">
