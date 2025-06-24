@@ -1,6 +1,6 @@
 import Separator from "@/components/bs-comp/chatComponent/Separator";
 import { Button } from "@/components/bs-ui/button";
-import { getSSOurlApi } from "@/controllers/API/pro";
+import { getSSOurlApi, getOAuth2UrlApi } from "@/controllers/API/pro";
 import { useEffect, useState } from "react";
 //@ts-ignore
 import Wxpro from "./icons/wxpro.svg?react";
@@ -45,17 +45,33 @@ export default function LoginBridge({ onHasLdap }) {
         location.href = casLoginUrl;
     }
 
+    const handleOAuth2Login = async () => {
+        try {
+            const res = await getOAuth2UrlApi();
+            if (res && res.url) {
+                window.location.href = res.url;
+            } else {
+                alert(t('login.unGetOAuth2Url') || '未获取到授权地址');
+            }
+        } catch (e) {
+            alert(t('login.getOAuth2UrlError') || '获取授权地址失败');
+        }
+    };
+
     if (!ssoUrl && !wxUrl) return null
 
     return <div>
         <Separator className="my-4" text={t('login.otherMethods')}></Separator>
-        <div className="flex justify-center items-center">
-            {ssoUrl && <Button
-                className="h-[48px] rounded-md bg-white hover:bg-gray-50/20"
-                onClick={handleCASLogin}
-            >
-                <img src="/a1-logo-blue.png" alt="CAS" className="h-6" />
-            </Button>}
+        <div className="flex justify-center items-center gap-8">
+            {ssoUrl && <div className="text-center">
+                <Button
+                    className="h-[48px] rounded-md bg-white hover:bg-gray-50/20"
+                    onClick={handleCASLogin}
+                >
+                    <img src="/a1-logo-red.png" alt="CAS" className="h-6" />
+                </Button>
+                <div className="text-xs text-gray-500 mt-1">A1-FAMILY</div>
+            </div>}
             {wxUrl && <Button
                 variant="outline"
                 className="h-[48px] px-4"
@@ -64,6 +80,15 @@ export default function LoginBridge({ onHasLdap }) {
                 <Wxpro className="mr-2" />
                 微信登录
             </Button>}
+            <div className="text-center">
+                <Button
+                    className="h-[48px] rounded-md bg-white hover:bg-gray-50/20"
+                    onClick={handleOAuth2Login}
+                >
+                    <img src="/a1-logo-blue.png" alt="OAuth2" className="h-6" />
+                </Button>
+                <div className="text-xs text-gray-500 mt-1">A1-SMILE</div>
+            </div>
         </div>
     </div>
 };

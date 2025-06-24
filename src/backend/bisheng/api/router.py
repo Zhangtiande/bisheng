@@ -9,6 +9,7 @@ from bisheng.api.cas import router as cas_router  # 导入CAS路由
 from bisheng.api.v2 import (assistant_router_rpc, chat_router_rpc, flow_router,
                             knowledge_router_rpc, rpc_router_rpc, workflow_router_rpc,
                             workstation_router_rpc)
+from bisheng.api.oauth2 import router as oauth2_router  # 导入OAuth2路由
 from fastapi import APIRouter
 
 router = APIRouter(prefix='/api/v1', )
@@ -37,6 +38,7 @@ router.include_router(workstation_router)
 
 router_cas = APIRouter(prefix='/api', )
 router_cas.include_router(cas_router)  # 将CAS路由添加到主路由中
+router_cas.include_router(oauth2_router)  # 将OAuth2路由添加到主路由中
 
 router_rpc = APIRouter(prefix='/api/v2', )
 router_rpc.include_router(knowledge_router_rpc)

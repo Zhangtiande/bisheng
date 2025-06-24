@@ -21,11 +21,12 @@ from bisheng.api.utils import get_request_ip
 # 路由前缀/cas
 router = APIRouter(prefix='/cas', tags=['CAS'])
 
-@router.get('/ticket/verify')
-async def verify_cas_ticket(request: Request, ticket: str = Query(..., description="CAS票据")):
+@router.get('/ticket/verify', tags=["CAS"])
+async def verify_cas_ticket(request: Request, ticket: str = Query(..., description="CAS票据"), serviceUrl:str = Query(None, description="CAS验证后重定向URL")):
     """
     验证CAS票据，并进行登录处理
     返回JSON响应，包含令牌信息
+    serviceUrl: 用于CAS验证后重定向
     """
     # 获取CAS配置
     sso_config = settings.environment.get('sso', {})
@@ -37,6 +38,8 @@ async def verify_cas_ticket(request: Request, ticket: str = Query(..., descripti
     # 获取配置
     validate_url = cas_config.get('validate_url')
     service_url = cas_config.get('service_url')
+    if serviceUrl:
+        service_url = serviceUrl
     default_email_format = cas_config.get('default_email_format', '{username}@example.com')
     
     if not validate_url or not service_url:
@@ -143,7 +146,7 @@ async def verify_cas_ticket(request: Request, ticket: str = Query(..., descripti
         logger.exception(f"CAS验证过程中发生错误: {e}")
         return resp_500(code=500, data={"error": f"验证过程中发生错误: {str(e)}"})
 
-@router.get('/list')
+@router.get('/list', tags=["CAS"])
 async def cas_list(request: Request):
     """
     获取CAS服务配置信息
