@@ -4,7 +4,7 @@ COMPONENT=$1
 
 # 如果component是backend，则改为backend worker
 if [ "$COMPONENT" = "backend" ]; then
-    COMPONENT="backend_worker worker"
+    COMPONENT="backend_worker backend"
 fi
 
 
