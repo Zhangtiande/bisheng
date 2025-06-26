@@ -111,3 +111,7 @@ export async function ldapLoginApi(username:string, password:string) {
         password
     })
 }
+
+export function getOAuth2UrlApi(): Promise<{ url: string }> {
+    return axios.get('/api/oauth2/authorize_url');
+}

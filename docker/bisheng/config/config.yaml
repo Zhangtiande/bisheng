@@ -58,14 +58,26 @@ environment:
   env: dev
   uns_support: ['png','jpg','jpeg','bmp','doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt', 'md', 'html', 'pdf', 'csv', 'tiff']
   sso:
+  # CAS单点登录配置
     cas:
       base_url: "http://10.191.44.21/cas"
       login_url: "http://10.191.44.21/cas/login"
       validate_url: "http://10.191.44.21/cas/serviceValidate"
-      service_url: "http://10.191.6.215/cas-callback"  # 替换为您的bisheng应用URL
+      service_url: "http://10.191.6.215/cas-callback"  # 默认的CAS重定向URL,可通过API接口重新指定
       default_email_format: "{username}@globalymc.com"  # 用户邮箱格式，{username}会被替换为CAS用户名
       enabled: true
-
+  # OAuth2 认证配置
+    oauth2:
+      base_url: "http://10.191.42.85/a1smile"  # OAuth2 服务器基础URL
+      auth_url: "http://10.191.42.85/a1smile/oauth/authorize"  # 授权端点
+      token_url: "http://10.191.42.85/a1smile/oauth/token"  # 令牌端点
+      user_info_url: "http://10.191.42.85/a1smile/oauth2/user/me"  # 用户信息端点
+      cookie_url: "http://10.191.42.85/a1smile/oauth2/cookiestore"  # Cookie存储端点
+      logout_url: "http://10.191.42.85/a1smile/authentication/logoutall"  # 登出端点
+      client_id: "client-yCopilot-v2-pro"  # OAuth2 客户端ID
+      client_secret: "ouath2-client-yCopilot-pass"  # OAuth2 客户端密钥
+      redirect_uri: "http://10.191.6.215/oauth2-callback"
+      enabled: true  # 是否启用 OAuth2 认证
 # 可根据loguru的文档配置不同 handlers
 logger_conf:
   # 默认输出到sys.stdout的日志级别, 大于等于此级别都会输出

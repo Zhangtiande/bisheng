@@ -40,6 +40,8 @@ import Report from "./pages/Report";
 import SystemPage from "./pages/SystemPage";
 import ResoucePage from "./pages/resoucePage";
 import { AppNumType } from "./types/app";
+import OAuth2Callback from "./pages/LoginPage/OAuth2Callback";
+import OAuth2LogoutCallback from './pages/LoginPage/OAuth2LogoutCallback';
 
 // react 与 react router dom版本不匹配
 // const FileLibPage = lazy(() => import(/* webpackChunkName: "FileLibPage" */ "./pages/FileLibPage"));
@@ -135,6 +137,7 @@ const privateRouter = [
   { path: "/diff/:id/:vid/:cid", element: <ErrorHoc Comp={DiffFlowPage} /> },
   { path: "/reset", element: <ResetPwdPage /> },
   { path: "/403", element: <Page403 /> },
+  { path: "/authentication/exit", element: <OAuth2LogoutCallback /> },
   { path: "*", element: <Navigate to="/" replace /> }
 ]
 
@@ -169,13 +172,15 @@ export const getAdminRouter = () => {
 
 export const publicRouter = createBrowserRouter([
   { path: "/", element: <LoginPage /> },
-  { path: "/cas-callback", element: <CasCallback /> }, // 新增CAS回调处理路由
+  { path: "/cas-callback", element: <CasCallback /> },
+  { path: "/oauth2-callback", element: <OAuth2Callback /> },
   { path: "/reset", element: <ResetPwdPage /> },
   { path: "/chat/:id/", element: <ChatShare /> },
   { path: "/chat/flow/:id/", element: <ChatShare type={AppNumType.FLOW} /> },
   { path: "/chat/assistant/:id/", element: <ChatAssitantShare /> },
   { path: "/resouce/:cid/:mid", element: <ResoucePage /> },
   { path: "/403", element: <Page403 /> },
+  { path: "/authentication/exit", element: <OAuth2LogoutCallback /> },
   { path: "*", element: <LoginPage /> }
 ],
   baseConfig)
