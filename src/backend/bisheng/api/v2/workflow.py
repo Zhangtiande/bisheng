@@ -1,6 +1,7 @@
 import uuid
 from typing import Optional, List
 import json
+from uuid import UUID
 
 from bisheng.api.errcode.base import NotFoundError
 from bisheng.api.services.workflow import WorkFlowService
