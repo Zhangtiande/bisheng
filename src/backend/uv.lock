@@ -8,24 +8,6 @@ resolution-markers = [
 ]
 
 [[package]]
-name = "accelerate"
-version = "1.7.0"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "huggingface-hub" },
-    { name = "numpy" },
-    { name = "packaging" },
-    { name = "psutil" },
-    { name = "pyyaml" },
-    { name = "safetensors" },
-    { name = "torch" },
-]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/97/33/47bbd507e3a851d33d19ce7b2141c5ea3689bfae91ba168044d7db24b0e9/accelerate-1.7.0.tar.gz", hash = "sha256:e8a2a5503d6237b9eee73cc8d36cf543f9c2d8dd2c6713450b322f5e6d53a610", size = 376026, upload-time = "2025-05-15T10:00:52.117Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/f8/bb/be8146c196ad6e4dec78385d91e92591f8a433576c4e04c342a636fcd811/accelerate-1.7.0-py3-none-any.whl", hash = "sha256:cf57165cca28769c6cf2650812371c81b18e05743dfa3c748524b1bb4f2b272f", size = 362095, upload-time = "2025-05-15T10:00:49.914Z" },
-]
-
-[[package]]
 name = "aiofiles"
 version = "24.1.0"
 source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
@@ -136,12 +118,6 @@ sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/63/4a/96f99a61ae299f9
 wheels = [
     { url = "https://mirrors.ustc.edu.cn/pypi/packages/8c/6e/9637122c5f007103bd5a259f4250bd8f1533dd2473227670fd10a1457b62/anthropic-0.51.0-py3-none-any.whl", hash = "sha256:b8b47d482c9aa1f81b923555cebb687c2730309a20d01be554730c8302e0f62a", size = 263957, upload-time = "2025-05-07T15:39:20.82Z" },
 ]
-
-[[package]]
-name = "antlr4-python3-runtime"
-version = "4.9.3"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/3e/38/7859ff46355f76f8d19459005ca000b6e7012f2f1ca597746cbcd1fbfe5e/antlr4-python3-runtime-4.9.3.tar.gz", hash = "sha256:f224469b4168294902bb1efa80a8bf7855f24c99aef99cbefc1bcd3cce77881b", size = 117034, upload-time = "2021-11-06T17:52:23.524Z" }
 
 [[package]]
 name = "anyio"
@@ -360,7 +336,7 @@ wheels = [
 
 [[package]]
 name = "bisheng"
-version = "1.1.0"
+version = "1.3.1"
 source = { virtual = "." }
 dependencies = [
     { name = "appdirs" },
@@ -400,6 +376,8 @@ dependencies = [
     { name = "llama-index" },
     { name = "loguru" },
     { name = "lxml" },
+    { name = "markdown" },
+    { name = "markdownify" },
     { name = "matplotlib" },
     { name = "mcp" },
     { name = "minio" },
@@ -408,6 +386,7 @@ dependencies = [
     { name = "numexpr" },
     { name = "numpy" },
     { name = "openai" },
+    { name = "openpyxl" },
     { name = "orjson" },
     { name = "pandas" },
     { name = "platformdirs" },
@@ -420,12 +399,17 @@ dependencies = [
     { name = "pymilvus" },
     { name = "pymupdf" },
     { name = "pymysql" },
+    { name = "pypandoc" },
     { name = "pypdf" },
     { name = "pypinyin" },
     { name = "pysrt" },
+    { name = "python-docx" },
     { name = "python-multipart" },
+    { name = "python-pptx" },
     { name = "qdrant-client" },
     { name = "qianfan" },
+    { name = "readability" },
+    { name = "readability-lxml" },
     { name = "redis" },
     { name = "rich" },
     { name = "rsa" },
@@ -433,16 +417,18 @@ dependencies = [
     { name = "shapely" },
     { name = "sqlmodel" },
     { name = "supabase" },
+    { name = "tabulate" },
     { name = "tenacity" },
     { name = "tencentcloud-sdk-python" },
     { name = "tiktoken" },
     { name = "typer" },
     { name = "types-cachetools" },
-    { name = "unstructured", extra = ["all-docs"] },
+    { name = "unstructured" },
     { name = "uvicorn" },
     { name = "weaviate-client" },
     { name = "websockets" },
     { name = "wikipedia" },
+    { name = "xlrd" },
 ]
 
 [package.dev-dependencies]
@@ -467,7 +453,7 @@ requires-dist = [
     { name = "appdirs", specifier = ">=1.4.4,<2.0.0" },
     { name = "arxiv", specifier = "==2.1.0" },
     { name = "beautifulsoup4", specifier = ">=4.12.2,<5.0.0" },
-    { name = "bisheng-langchain", path = "bisheng_langchain-1.2.1-py3-none-any.whl" },
+    { name = "bisheng-langchain", path = "bisheng_langchain-1.3.1-py3-none-any.whl" },
     { name = "bisheng-pyautogen", specifier = "==0.3.2" },
     { name = "bisheng-ragas", specifier = ">=1.0.2,<2.0.0" },
     { name = "blobfile", specifier = ">=3.0.0,<4.0.0" },
@@ -496,11 +482,13 @@ requires-dist = [
     { name = "langchain-experimental" },
     { name = "langchain-google-genai", specifier = ">=2.1.0,<3.0.0" },
     { name = "langchain-ollama", specifier = ">=0.3.0,<1.0.0" },
-    { name = "langchain-openai", specifier = ">=0.3.12,<1.0.0" },
+    { name = "langchain-openai", specifier = ">=0.3.16,<1.0.0" },
     { name = "langgraph", specifier = ">=0.3.27,<1.0.0" },
     { name = "llama-index", specifier = "==0.9.48" },
     { name = "loguru", specifier = ">=0.7.1,<1.0.0" },
     { name = "lxml", specifier = ">=4.9.2,<5.0.0" },
+    { name = "markdown", specifier = ">=3.8,<4.0.0" },
+    { name = "markdownify", specifier = ">=1.1.0,<2.0.0" },
     { name = "matplotlib", specifier = "==3.8.4" },
     { name = "mcp", specifier = ">=1.6.0,<2.0.0" },
     { name = "minio", specifier = "==7.2.0" },
@@ -509,6 +497,7 @@ requires-dist = [
     { name = "numexpr", specifier = ">=2.8.6,<3.0.0" },
     { name = "numpy", specifier = ">=1.26.2,<2.0.0" },
     { name = "openai", specifier = ">=1.68.2,<2.0.0" },
+    { name = "openpyxl", specifier = ">=3.1.5,<4.0.0" },
     { name = "orjson", specifier = ">=3.9.1,<4.0.0" },
     { name = "pandas", specifier = ">=2.0.0,<3.0.0" },
     { name = "platformdirs", specifier = ">=2.5" },
@@ -518,15 +507,20 @@ requires-dist = [
     { name = "pyarrow", specifier = ">=12.0.0,<13.0.0" },
     { name = "pydantic", specifier = ">=2.7.2,<3.0.0" },
     { name = "pyjwt", specifier = ">=1.7.1,<2.0.0" },
-    { name = "pymilvus", specifier = "==2.4.10" },
+    { name = "pymilvus", specifier = "==2.5.10" },
     { name = "pymupdf", specifier = ">=1.23.8,<2.0.0" },
     { name = "pymysql", specifier = ">=0.10.1,<1.0.0" },
+    { name = "pypandoc", specifier = ">=1.15,<2.0.0" },
     { name = "pypdf" },
     { name = "pypinyin", specifier = "==0.50.0" },
     { name = "pysrt", specifier = ">=1.1.2,<2.0.0" },
+    { name = "python-docx", specifier = ">=1.1.2,<2.0.0" },
     { name = "python-multipart", specifier = ">=0.0.6,<1.0.0" },
+    { name = "python-pptx", specifier = ">=1.0.2,<2.0.0" },
     { name = "qdrant-client", specifier = ">=1.3.0,<2.0.0" },
     { name = "qianfan", specifier = ">=0.4.4,<1.0.0" },
+    { name = "readability", specifier = ">=0.3.2,<1.0.0" },
+    { name = "readability-lxml", specifier = ">=0.8.4.1,<1.0.0" },
     { name = "redis", specifier = ">=5.0.0,<6.0.0" },
     { name = "rich", specifier = ">=13.4.2,<14.0.0" },
     { name = "rsa", specifier = "==4.9" },
@@ -534,16 +528,18 @@ requires-dist = [
     { name = "shapely", specifier = ">=2.0.1,<3.0.0" },
     { name = "sqlmodel", specifier = ">=0.0.14,<1.0.0" },
     { name = "supabase", specifier = ">=2.4.0,<3.0.0" },
+    { name = "tabulate", specifier = ">=0.9.0,<1.0.0" },
     { name = "tenacity", specifier = "<8.4.0" },
     { name = "tencentcloud-sdk-python", specifier = ">=3.0.1373,<4.0.0" },
     { name = "tiktoken" },
     { name = "typer", specifier = ">=0.9.0,<1.0.0" },
     { name = "types-cachetools", specifier = ">=5.3.0.5,<6.0.0.0" },
-    { name = "unstructured", extras = ["all-docs"], specifier = ">=0.17.2,<0.18.0" },
+    { name = "unstructured", specifier = ">=0.17.2,<0.18.0" },
     { name = "uvicorn", specifier = ">=0.23.1,<1.0.0" },
     { name = "weaviate-client", specifier = ">=3.21.0,<4.0.0" },
     { name = "websockets", specifier = ">=10.3,<11.0" },
     { name = "wikipedia", specifier = ">=1.4.0,<2.0.0" },
+    { name = "xlrd", specifier = ">=2.0.1,<3.0.0" },
 ]
 
 [package.metadata.requires-dev]
@@ -565,8 +561,8 @@ dev = [
 
 [[package]]
 name = "bisheng-langchain"
-version = "1.2.1"
-source = { path = "bisheng_langchain-1.2.1-py3-none-any.whl" }
+version = "1.3.1"
+source = { path = "bisheng_langchain-1.3.1-py3-none-any.whl" }
 dependencies = [
     { name = "bisheng-pyautogen" },
     { name = "bisheng-ragas" },
@@ -587,7 +583,7 @@ dependencies = [
     { name = "zhipuai" },
 ]
 wheels = [
-    { filename = "bisheng_langchain-1.2.1-py3-none-any.whl", hash = "sha256:ee1861cebc2d59a13eb1e0a9e56ff0f9fc4e918974ea5684c7455158ccc4d161" },
+    { filename = "bisheng_langchain-1.3.1-py3-none-any.whl", hash = "sha256:6857cc7d2fc55e6853b7706bb89cf20c5eff6ee39438e57b97c14941dffa308a" },
 ]
 
 [package.metadata]
@@ -1055,6 +1051,15 @@ wheels = [
 ]
 
 [[package]]
+name = "cssselect"
+version = "1.3.0"
+source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
+sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/72/0a/c3ea9573b1dc2e151abfe88c7fe0c26d1892fe6ed02d0cdb30f0d57029d5/cssselect-1.3.0.tar.gz", hash = "sha256:57f8a99424cfab289a1b6a816a43075a4b00948c86b4dcf3ef4ee7e15f7ab0c7", size = 42870, upload-time = "2025-03-10T09:30:29.638Z" }
+wheels = [
+    { url = "https://mirrors.ustc.edu.cn/pypi/packages/ee/58/257350f7db99b4ae12b614a36256d9cc870d71d9e451e79c2dc3b23d7c3c/cssselect-1.3.0-py3-none-any.whl", hash = "sha256:56d1bf3e198080cc1667e137bc51de9cadfca259f03c2d4e09037b3e01e30f0d", size = 18786, upload-time = "2025-03-10T09:30:28.048Z" },
+]
+
+[[package]]
 name = "cycler"
 version = "0.12.1"
 source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
@@ -1220,22 +1225,6 @@ source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
 sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/9d/a4/e44218c2b394e31a6dd0d6b095c4e1f32d0be54c2a4b250032d717647bab/durationpy-0.10.tar.gz", hash = "sha256:1fa6893409a6e739c9c72334fc65cca1f355dbdd93405d30f726deb5bde42fba", size = 3335, upload-time = "2025-05-17T13:52:37.26Z" }
 wheels = [
     { url = "https://mirrors.ustc.edu.cn/pypi/packages/b0/0d/9feae160378a3553fa9a339b0e9c1a048e147a4127210e286ef18b730f03/durationpy-0.10-py3-none-any.whl", hash = "sha256:3b41e1b601234296b4fb368338fdcd3e13e0b4fb5b67345948f4f2bf9868b286", size = 3922, upload-time = "2025-05-17T13:52:36.463Z" },
-]
-
-[[package]]
-name = "effdet"
-version = "0.4.1"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "omegaconf" },
-    { name = "pycocotools" },
-    { name = "timm" },
-    { name = "torch" },
-    { name = "torchvision" },
-]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/0e/c3/12d45167ec36f7f9a5ed80bc2128392b3f6207f760d437287d32a0e43f41/effdet-0.4.1.tar.gz", hash = "sha256:ac5589fd304a5650c201986b2ef5f8e10c111093a71b1c49fa6b8817710812b5", size = 110134, upload-time = "2023-05-21T22:18:01.039Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/9c/13/563119fe0af82aca5a3b89399c435953072c39515c2e818eb82793955c3b/effdet-0.4.1-py3-none-any.whl", hash = "sha256:10889a226228d515c948e3fcf811e64c0d78d7aa94823a300045653b9c284cb7", size = 112513, upload-time = "2023-05-21T22:17:58.47Z" },
 ]
 
 [[package]]
@@ -1545,21 +1534,6 @@ dependencies = [
 sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/56/be/217a598a818567b28e859ff087f347475c807a5649296fb5a817c58dacef/google-auth-httplib2-0.2.0.tar.gz", hash = "sha256:38aa7badf48f974f1eb9861794e9c0cb2a0511a4ec0679b1f886d108f5640e05", size = 10842, upload-time = "2023-12-12T17:40:30.722Z" }
 wheels = [
     { url = "https://mirrors.ustc.edu.cn/pypi/packages/be/8a/fe34d2f3f9470a27b01c9e76226965863f153d5fbe276f83608562e49c04/google_auth_httplib2-0.2.0-py2.py3-none-any.whl", hash = "sha256:b65a0a2123300dd71281a7bf6e64d65a0759287df52729bdd1ae2e47dc311a3d", size = 9253, upload-time = "2023-12-12T17:40:13.055Z" },
-]
-
-[[package]]
-name = "google-cloud-vision"
-version = "3.10.1"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "google-api-core", extra = ["grpc"] },
-    { name = "google-auth" },
-    { name = "proto-plus" },
-    { name = "protobuf" },
-]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/03/cc/6bf0ca26eedac965d589b4e5ac0f76c939854d18f60da80b9b693feb33ce/google_cloud_vision-3.10.1.tar.gz", hash = "sha256:531e101b2ccad922433ad46c46a47529e64a0973346f30f91a012de163a52311", size = 568457, upload-time = "2025-03-17T11:38:06.508Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/94/b6/60f2910485d32f7bba92cc33e5053b3f29d61fccaa57e5e58c600bb7e0d2/google_cloud_vision-3.10.1-py3-none-any.whl", hash = "sha256:91959ea12b0d6a8442e30c0a5062cd305f349a4840f9184b5061b3153bbd8476", size = 526076, upload-time = "2025-03-17T11:38:05.066Z" },
 ]
 
 [[package]]
@@ -1911,18 +1885,6 @@ name = "jieba"
 version = "0.42.1"
 source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
 sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/c6/cb/18eeb235f833b726522d7ebed54f2278ce28ba9438e3135ab0278d9792a2/jieba-0.42.1.tar.gz", hash = "sha256:055ca12f62674fafed09427f176506079bc135638a14e23e25be909131928db2", size = 19214172, upload-time = "2020-01-20T14:27:23.5Z" }
-
-[[package]]
-name = "jinja2"
-version = "3.1.6"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "markupsafe" },
-]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/df/bf/f7da0350254c0ed7c72f3e33cef02e048281fec7ecec5f032d4aac52226b/jinja2-3.1.6.tar.gz", hash = "sha256:0137fb05990d35f1275a587e9aee6d56da821fc83491a0fb838183be43f66d6d", size = 245115, upload-time = "2025-03-05T20:05:02.478Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl", hash = "sha256:85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67", size = 134899, upload-time = "2025-03-05T20:05:00.369Z" },
-]
 
 [[package]]
 name = "jiter"
@@ -2368,6 +2330,18 @@ wheels = [
 ]
 
 [[package]]
+name = "lxml-html-clean"
+version = "0.4.2"
+source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
+dependencies = [
+    { name = "lxml" },
+]
+sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/79/b6/466e71db127950fb8d172026a8f0a9f0dc6f64c8e78e2ca79f252e5790b8/lxml_html_clean-0.4.2.tar.gz", hash = "sha256:91291e7b5db95430abf461bc53440964d58e06cc468950f9e47db64976cebcb3", size = 21622, upload-time = "2025-04-09T11:33:59.432Z" }
+wheels = [
+    { url = "https://mirrors.ustc.edu.cn/pypi/packages/4e/0b/942cb7278d6caad79343ad2ddd636ed204a47909b969d19114a3097f5aa3/lxml_html_clean-0.4.2-py3-none-any.whl", hash = "sha256:74ccfba277adcfea87a1e9294f47dd86b05d65b4da7c5b07966e3d5f3be8a505", size = 14184, upload-time = "2025-04-09T11:33:57.988Z" },
+]
+
+[[package]]
 name = "markdown"
 version = "3.8"
 source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
@@ -2389,21 +2363,16 @@ wheels = [
 ]
 
 [[package]]
-name = "markupsafe"
-version = "3.0.2"
+name = "markdownify"
+version = "1.1.0"
 source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/b2/97/5d42485e71dfc078108a86d6de8fa46db44a1a9295e89c5d6d4a06e23a62/markupsafe-3.0.2.tar.gz", hash = "sha256:ee55d3edf80167e48ea11a923c7386f4669df67d7994554387f84e7d8b0a2bf0", size = 20537, upload-time = "2024-10-18T15:21:54.129Z" }
+dependencies = [
+    { name = "beautifulsoup4" },
+    { name = "six" },
+]
+sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/2f/78/c48fed23c7aebc2c16049062e72de1da3220c274de59d28c942acdc9ffb2/markdownify-1.1.0.tar.gz", hash = "sha256:449c0bbbf1401c5112379619524f33b63490a8fa479456d41de9dc9e37560ebd", size = 17127, upload-time = "2025-03-05T11:54:40.574Z" }
 wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/04/90/d08277ce111dd22f77149fd1a5d4653eeb3b3eaacbdfcbae5afb2600eebd/MarkupSafe-3.0.2-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:7e94c425039cde14257288fd61dcfb01963e658efbc0ff54f5306b06054700f8", size = 14357, upload-time = "2024-10-18T15:20:51.44Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/04/e1/6e2194baeae0bca1fae6629dc0cbbb968d4d941469cbab11a3872edff374/MarkupSafe-3.0.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:9e2d922824181480953426608b81967de705c3cef4d1af983af849d7bd619158", size = 12393, upload-time = "2024-10-18T15:20:52.426Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/1d/69/35fa85a8ece0a437493dc61ce0bb6d459dcba482c34197e3efc829aa357f/MarkupSafe-3.0.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:38a9ef736c01fccdd6600705b09dc574584b89bea478200c5fbf112a6b0d5579", size = 21732, upload-time = "2024-10-18T15:20:53.578Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/22/35/137da042dfb4720b638d2937c38a9c2df83fe32d20e8c8f3185dbfef05f7/MarkupSafe-3.0.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bbcb445fa71794da8f178f0f6d66789a28d7319071af7a496d4d507ed566270d", size = 20866, upload-time = "2024-10-18T15:20:55.06Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/29/28/6d029a903727a1b62edb51863232152fd335d602def598dade38996887f0/MarkupSafe-3.0.2-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:57cb5a3cf367aeb1d316576250f65edec5bb3be939e9247ae594b4bcbc317dfb", size = 20964, upload-time = "2024-10-18T15:20:55.906Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/cc/cd/07438f95f83e8bc028279909d9c9bd39e24149b0d60053a97b2bc4f8aa51/MarkupSafe-3.0.2-cp310-cp310-musllinux_1_2_aarch64.whl", hash = "sha256:3809ede931876f5b2ec92eef964286840ed3540dadf803dd570c3b7e13141a3b", size = 21977, upload-time = "2024-10-18T15:20:57.189Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/29/01/84b57395b4cc062f9c4c55ce0df7d3108ca32397299d9df00fedd9117d3d/MarkupSafe-3.0.2-cp310-cp310-musllinux_1_2_i686.whl", hash = "sha256:e07c3764494e3776c602c1e78e298937c3315ccc9043ead7e685b7f2b8d47b3c", size = 21366, upload-time = "2024-10-18T15:20:58.235Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/bd/6e/61ebf08d8940553afff20d1fb1ba7294b6f8d279df9fd0c0db911b4bbcfd/MarkupSafe-3.0.2-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:b424c77b206d63d500bcb69fa55ed8d0e6a3774056bdc4839fc9298a7edca171", size = 21091, upload-time = "2024-10-18T15:20:59.235Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/11/23/ffbf53694e8c94ebd1e7e491de185124277964344733c45481f32ede2499/MarkupSafe-3.0.2-cp310-cp310-win32.whl", hash = "sha256:fcabf5ff6eea076f859677f5f0b6b5c1a51e70a376b0579e0eadef8db48c6b50", size = 15065, upload-time = "2024-10-18T15:21:00.307Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/44/06/e7175d06dd6e9172d4a69a72592cb3f7a996a9c396eee29082826449bbc3/MarkupSafe-3.0.2-cp310-cp310-win_amd64.whl", hash = "sha256:6af100e168aa82a50e186c82875a5893c5597a0c1ccdb0d8b40240b1f28b969a", size = 15514, upload-time = "2024-10-18T15:21:01.122Z" },
+    { url = "https://mirrors.ustc.edu.cn/pypi/packages/64/11/b751af7ad41b254a802cf52f7bc1fca7cabe2388132f2ce60a1a6b9b9622/markdownify-1.1.0-py3-none-any.whl", hash = "sha256:32a5a08e9af02c8a6528942224c91b933b4bd2c7d078f9012943776fc313eeef", size = 13901, upload-time = "2025-03-05T11:54:39.454Z" },
 ]
 
 [[package]]
@@ -2688,139 +2657,6 @@ wheels = [
 ]
 
 [[package]]
-name = "nvidia-cublas-cu12"
-version = "12.6.4.1"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/af/eb/ff4b8c503fa1f1796679dce648854d58751982426e4e4b37d6fce49d259c/nvidia_cublas_cu12-12.6.4.1-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:08ed2686e9875d01b58e3cb379c6896df8e76c75e0d4a7f7dace3d7b6d9ef8eb", size = 393138322, upload-time = "2024-11-20T17:40:25.65Z" },
-]
-
-[[package]]
-name = "nvidia-cuda-cupti-cu12"
-version = "12.6.80"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/49/60/7b6497946d74bcf1de852a21824d63baad12cd417db4195fc1bfe59db953/nvidia_cuda_cupti_cu12-12.6.80-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:6768bad6cab4f19e8292125e5f1ac8aa7d1718704012a0e3272a6f61c4bce132", size = 8917980, upload-time = "2024-11-20T17:36:04.019Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/a5/24/120ee57b218d9952c379d1e026c4479c9ece9997a4fb46303611ee48f038/nvidia_cuda_cupti_cu12-12.6.80-py3-none-manylinux2014_x86_64.whl", hash = "sha256:a3eff6cdfcc6a4c35db968a06fcadb061cbc7d6dde548609a941ff8701b98b73", size = 8917972, upload-time = "2024-10-01T16:58:06.036Z" },
-]
-
-[[package]]
-name = "nvidia-cuda-nvrtc-cu12"
-version = "12.6.77"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/75/2e/46030320b5a80661e88039f59060d1790298b4718944a65a7f2aeda3d9e9/nvidia_cuda_nvrtc_cu12-12.6.77-py3-none-manylinux2014_x86_64.whl", hash = "sha256:35b0cc6ee3a9636d5409133e79273ce1f3fd087abb0532d2d2e8fff1fe9efc53", size = 23650380, upload-time = "2024-10-01T17:00:14.643Z" },
-]
-
-[[package]]
-name = "nvidia-cuda-runtime-cu12"
-version = "12.6.77"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/e1/23/e717c5ac26d26cf39a27fbc076240fad2e3b817e5889d671b67f4f9f49c5/nvidia_cuda_runtime_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:ba3b56a4f896141e25e19ab287cd71e52a6a0f4b29d0d31609f60e3b4d5219b7", size = 897690, upload-time = "2024-11-20T17:35:30.697Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/f0/62/65c05e161eeddbafeca24dc461f47de550d9fa8a7e04eb213e32b55cfd99/nvidia_cuda_runtime_cu12-12.6.77-py3-none-manylinux2014_x86_64.whl", hash = "sha256:a84d15d5e1da416dd4774cb42edf5e954a3e60cc945698dc1d5be02321c44dc8", size = 897678, upload-time = "2024-10-01T16:57:33.821Z" },
-]
-
-[[package]]
-name = "nvidia-cudnn-cu12"
-version = "9.5.1.17"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "nvidia-cublas-cu12", marker = "(platform_machine != 'arm64' and sys_platform == 'darwin') or (platform_machine != 'aarch64' and sys_platform == 'linux') or (sys_platform != 'darwin' and sys_platform != 'linux')" },
-]
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/2a/78/4535c9c7f859a64781e43c969a3a7e84c54634e319a996d43ef32ce46f83/nvidia_cudnn_cu12-9.5.1.17-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:30ac3869f6db17d170e0e556dd6cc5eee02647abc31ca856634d5a40f82c15b2", size = 570988386, upload-time = "2024-10-25T19:54:26.39Z" },
-]
-
-[[package]]
-name = "nvidia-cufft-cu12"
-version = "11.3.0.4"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "nvidia-nvjitlink-cu12", marker = "(platform_machine != 'arm64' and sys_platform == 'darwin') or (platform_machine != 'aarch64' and sys_platform == 'linux') or (sys_platform != 'darwin' and sys_platform != 'linux')" },
-]
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/8f/16/73727675941ab8e6ffd86ca3a4b7b47065edcca7a997920b831f8147c99d/nvidia_cufft_cu12-11.3.0.4-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:ccba62eb9cef5559abd5e0d54ceed2d9934030f51163df018532142a8ec533e5", size = 200221632, upload-time = "2024-11-20T17:41:32.357Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/60/de/99ec247a07ea40c969d904fc14f3a356b3e2a704121675b75c366b694ee1/nvidia_cufft_cu12-11.3.0.4-py3-none-manylinux2014_x86_64.whl", hash = "sha256:768160ac89f6f7b459bee747e8d175dbf53619cfe74b2a5636264163138013ca", size = 200221622, upload-time = "2024-10-01T17:03:58.79Z" },
-]
-
-[[package]]
-name = "nvidia-cufile-cu12"
-version = "1.11.1.6"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/b2/66/cc9876340ac68ae71b15c743ddb13f8b30d5244af344ec8322b449e35426/nvidia_cufile_cu12-1.11.1.6-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:cc23469d1c7e52ce6c1d55253273d32c565dd22068647f3aa59b3c6b005bf159", size = 1142103, upload-time = "2024-11-20T17:42:11.83Z" },
-]
-
-[[package]]
-name = "nvidia-curand-cu12"
-version = "10.3.7.77"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/73/1b/44a01c4e70933637c93e6e1a8063d1e998b50213a6b65ac5a9169c47e98e/nvidia_curand_cu12-10.3.7.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:a42cd1344297f70b9e39a1e4f467a4e1c10f1da54ff7a85c12197f6c652c8bdf", size = 56279010, upload-time = "2024-11-20T17:42:50.958Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/4a/aa/2c7ff0b5ee02eaef890c0ce7d4f74bc30901871c5e45dee1ae6d0083cd80/nvidia_curand_cu12-10.3.7.77-py3-none-manylinux2014_x86_64.whl", hash = "sha256:99f1a32f1ac2bd134897fc7a203f779303261268a65762a623bf30cc9fe79117", size = 56279000, upload-time = "2024-10-01T17:04:45.274Z" },
-]
-
-[[package]]
-name = "nvidia-cusolver-cu12"
-version = "11.7.1.2"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "nvidia-cublas-cu12", marker = "(platform_machine != 'arm64' and sys_platform == 'darwin') or (platform_machine != 'aarch64' and sys_platform == 'linux') or (sys_platform != 'darwin' and sys_platform != 'linux')" },
-    { name = "nvidia-cusparse-cu12", marker = "(platform_machine != 'arm64' and sys_platform == 'darwin') or (platform_machine != 'aarch64' and sys_platform == 'linux') or (sys_platform != 'darwin' and sys_platform != 'linux')" },
-    { name = "nvidia-nvjitlink-cu12", marker = "(platform_machine != 'arm64' and sys_platform == 'darwin') or (platform_machine != 'aarch64' and sys_platform == 'linux') or (sys_platform != 'darwin' and sys_platform != 'linux')" },
-]
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/f0/6e/c2cf12c9ff8b872e92b4a5740701e51ff17689c4d726fca91875b07f655d/nvidia_cusolver_cu12-11.7.1.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:e9e49843a7707e42022babb9bcfa33c29857a93b88020c4e4434656a655b698c", size = 158229790, upload-time = "2024-11-20T17:43:43.211Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/9f/81/baba53585da791d043c10084cf9553e074548408e04ae884cfe9193bd484/nvidia_cusolver_cu12-11.7.1.2-py3-none-manylinux2014_x86_64.whl", hash = "sha256:6cf28f17f64107a0c4d7802be5ff5537b2130bfc112f25d5a30df227058ca0e6", size = 158229780, upload-time = "2024-10-01T17:05:39.875Z" },
-]
-
-[[package]]
-name = "nvidia-cusparse-cu12"
-version = "12.5.4.2"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "nvidia-nvjitlink-cu12", marker = "(platform_machine != 'arm64' and sys_platform == 'darwin') or (platform_machine != 'aarch64' and sys_platform == 'linux') or (sys_platform != 'darwin' and sys_platform != 'linux')" },
-]
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/06/1e/b8b7c2f4099a37b96af5c9bb158632ea9e5d9d27d7391d7eb8fc45236674/nvidia_cusparse_cu12-12.5.4.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:7556d9eca156e18184b94947ade0fba5bb47d69cec46bf8660fd2c71a4b48b73", size = 216561367, upload-time = "2024-11-20T17:44:54.824Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/43/ac/64c4316ba163e8217a99680c7605f779accffc6a4bcd0c778c12948d3707/nvidia_cusparse_cu12-12.5.4.2-py3-none-manylinux2014_x86_64.whl", hash = "sha256:23749a6571191a215cb74d1cdbff4a86e7b19f1200c071b3fcf844a5bea23a2f", size = 216561357, upload-time = "2024-10-01T17:06:29.861Z" },
-]
-
-[[package]]
-name = "nvidia-cusparselt-cu12"
-version = "0.6.3"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/3b/9a/72ef35b399b0e183bc2e8f6f558036922d453c4d8237dab26c666a04244b/nvidia_cusparselt_cu12-0.6.3-py3-none-manylinux2014_x86_64.whl", hash = "sha256:e5c8a26c36445dd2e6812f1177978a24e2d37cacce7e090f297a688d1ec44f46", size = 156785796, upload-time = "2024-10-15T21:29:17.709Z" },
-]
-
-[[package]]
-name = "nvidia-nccl-cu12"
-version = "2.26.2"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/67/ca/f42388aed0fddd64ade7493dbba36e1f534d4e6fdbdd355c6a90030ae028/nvidia_nccl_cu12-2.26.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:694cf3879a206553cc9d7dbda76b13efaf610fdb70a50cba303de1b0d1530ac6", size = 201319755, upload-time = "2025-03-13T00:29:55.296Z" },
-]
-
-[[package]]
-name = "nvidia-nvjitlink-cu12"
-version = "12.6.85"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/9d/d7/c5383e47c7e9bf1c99d5bd2a8c935af2b6d705ad831a7ec5c97db4d82f4f/nvidia_nvjitlink_cu12-12.6.85-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl", hash = "sha256:eedc36df9e88b682efe4309aa16b5b4e78c2407eac59e8c10a6a47535164369a", size = 19744971, upload-time = "2024-11-20T17:46:53.366Z" },
-]
-
-[[package]]
-name = "nvidia-nvtx-cu12"
-version = "12.6.77"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/56/9a/fff8376f8e3d084cd1530e1ef7b879bb7d6d265620c95c1b322725c694f4/nvidia_nvtx_cu12-12.6.77-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:b90bed3df379fa79afbd21be8e04a0314336b8ae16768b58f2d34cb1d04cd7d2", size = 89276, upload-time = "2024-11-20T17:38:27.621Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/9e/4e/0d0c945463719429b7bd21dece907ad0bde437a2ff12b9b12fee94722ab0/nvidia_nvtx_cu12-12.6.77-py3-none-manylinux2014_x86_64.whl", hash = "sha256:6574241a3ec5fdc9334353ab8c479fe75841dbe8f4532a8fc97ce63503330ba1", size = 89265, upload-time = "2024-10-01T17:00:38.172Z" },
-]
-
-[[package]]
 name = "oauthlib"
 version = "3.2.2"
 source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
@@ -2849,37 +2685,6 @@ dependencies = [
 sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/e2/64/709dc99030f8f46ec552f0a7da73bbdcc2da58666abfec4742ccdb2e800e/ollama-0.4.8.tar.gz", hash = "sha256:1121439d49b96fa8339842965d0616eba5deb9f8c790786cdf4c0b3df4833802", size = 12972, upload-time = "2025-04-16T21:55:14.101Z" }
 wheels = [
     { url = "https://mirrors.ustc.edu.cn/pypi/packages/33/3f/164de150e983b3a16e8bf3d4355625e51a357e7b3b1deebe9cc1f7cb9af8/ollama-0.4.8-py3-none-any.whl", hash = "sha256:04312af2c5e72449aaebac4a2776f52ef010877c554103419d3f36066fe8af4c", size = 13325, upload-time = "2025-04-16T21:55:12.779Z" },
-]
-
-[[package]]
-name = "omegaconf"
-version = "2.3.0"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "antlr4-python3-runtime" },
-    { name = "pyyaml" },
-]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/09/48/6388f1bb9da707110532cb70ec4d2822858ddfb44f1cdf1233c20a80ea4b/omegaconf-2.3.0.tar.gz", hash = "sha256:d5d4b6d29955cc50ad50c46dc269bcd92c6e00f5f90d23ab5fee7bfca4ba4cc7", size = 3298120, upload-time = "2022-12-08T20:59:22.753Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl", hash = "sha256:7b4df175cdb08ba400f45cae3bdcae7ba8365db4d165fc65fd04b050ab63b46b", size = 79500, upload-time = "2022-12-08T20:59:19.686Z" },
-]
-
-[[package]]
-name = "onnx"
-version = "1.18.0"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "numpy" },
-    { name = "protobuf" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/3d/60/e56e8ec44ed34006e6d4a73c92a04d9eea6163cc12440e35045aec069175/onnx-1.18.0.tar.gz", hash = "sha256:3d8dbf9e996629131ba3aa1afd1d8239b660d1f830c6688dd7e03157cccd6b9c", size = 12563009, upload-time = "2025-05-12T22:03:09.626Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/8e/e3/ab8a09c0af43373e0422de461956a1737581325260659aeffae22a7dad18/onnx-1.18.0-cp310-cp310-macosx_12_0_universal2.whl", hash = "sha256:4a3b50d94620e2c7c1404d1d59bc53e665883ae3fecbd856cc86da0639fd0fc3", size = 18280145, upload-time = "2025-05-12T22:01:49.875Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/04/5b/3cfd183961a0a872fe29c95f8d07264890ec65c75c94b99a4dabc950df29/onnx-1.18.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e189652dad6e70a0465035c55cc565c27aa38803dd4f4e74e4b952ee1c2de94b", size = 17422721, upload-time = "2025-05-12T22:01:52.841Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/58/52/fa649429016c5790f68c614cdebfbefd3e72ba1c458966305297d540f713/onnx-1.18.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bfb1f271b1523b29f324bfd223f6a4cfbdc5a2f2f16e73563671932d33663365", size = 17584220, upload-time = "2025-05-12T22:01:56.458Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/42/52/dc166de41a5f72738b0bdfb2a19e0ebe4743cf3ecc9ae381ea3425bcb332/onnx-1.18.0-cp310-cp310-win32.whl", hash = "sha256:e03071041efd82e0317b3c45433b2f28146385b80f26f82039bc68048ac1a7a0", size = 15734494, upload-time = "2025-05-12T22:01:59.704Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/a6/f9/e766a3b85b7651ddfc5f9648e0e9dc24e88b7e88ea7f8c23187530e818ea/onnx-1.18.0-cp310-cp310-win_amd64.whl", hash = "sha256:9235b3493951e11e75465d56f4cd97e3e9247f096160dd3466bfabe4cbc938bc", size = 15848421, upload-time = "2025-05-12T22:02:03.01Z" },
 ]
 
 [[package]]
@@ -3195,31 +3000,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pdf2image"
-version = "1.17.0"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "pillow" },
-]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/00/d8/b280f01045555dc257b8153c00dee3bc75830f91a744cd5f84ef3a0a64b1/pdf2image-1.17.0.tar.gz", hash = "sha256:eaa959bc116b420dd7ec415fcae49b98100dda3dd18cd2fdfa86d09f112f6d57", size = 12811, upload-time = "2024-01-07T20:33:01.965Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/62/33/61766ae033518957f877ab246f87ca30a85b778ebaad65b7f74fa7e52988/pdf2image-1.17.0-py3-none-any.whl", hash = "sha256:ecdd58d7afb810dffe21ef2b1bbc057ef434dabbac6c33778a38a3f7744a27e2", size = 11618, upload-time = "2024-01-07T20:32:59.957Z" },
-]
-
-[[package]]
-name = "pdfminer-six"
-version = "20250506"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "charset-normalizer" },
-    { name = "cryptography" },
-]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/78/46/5223d613ac4963e1f7c07b2660fe0e9e770102ec6bda8c038400113fb215/pdfminer_six-20250506.tar.gz", hash = "sha256:b03cc8df09cf3c7aba8246deae52e0bca7ebb112a38895b5e1d4f5dd2b8ca2e7", size = 7387678, upload-time = "2025-05-06T16:17:00.787Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/73/16/7a432c0101fa87457e75cb12c879e1749c5870a786525e2e0f42871d6462/pdfminer_six-20250506-py3-none-any.whl", hash = "sha256:d81ad173f62e5f841b53a8ba63af1a4a355933cfc0ffabd608e568b9193909e3", size = 5620187, upload-time = "2025-05-06T16:16:58.669Z" },
-]
-
-[[package]]
 name = "pexpect"
 version = "4.9.0"
 source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
@@ -3229,55 +3009,6 @@ dependencies = [
 sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/42/92/cc564bf6381ff43ce1f4d06852fc19a2f11d180f23dc32d9588bee2f149d/pexpect-4.9.0.tar.gz", hash = "sha256:ee7d41123f3c9911050ea2c2dac107568dc43b2d3b0c7557a33212c398ead30f", size = 166450, upload-time = "2023-11-25T09:07:26.339Z" }
 wheels = [
     { url = "https://mirrors.ustc.edu.cn/pypi/packages/9e/c3/059298687310d527a58bb01f3b1965787ee3b40dce76752eda8b44e9a2c5/pexpect-4.9.0-py2.py3-none-any.whl", hash = "sha256:7236d1e080e4936be2dc3e326cec0af72acf9212a7e1d060210e70a47e253523", size = 63772, upload-time = "2023-11-25T06:56:14.81Z" },
-]
-
-[[package]]
-name = "pi-heif"
-version = "0.16.0"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "pillow" },
-]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/92/e5/a674bb9ede3495d64a08ec5ed79847d881fc88ff9c93187d952591d07b91/pi_heif-0.16.0.tar.gz", hash = "sha256:53fd0c582b01f1763ffa9959694164424c658eb3af5843f187ec019a0f0ef2b4", size = 14896954, upload-time = "2024-04-01T20:46:07.175Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/dc/80/686d82f4a2864a7bea4e55bc961b2cbfe990ef77b2a92df62a366b582efa/pi_heif-0.16.0-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:e8e8140be4defb226791f9d4ad991a4e75e4bb0d8e2228828b6f81864b6907a7", size = 502502, upload-time = "2024-04-01T20:43:44.392Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/ba/2c/cfffc26919643bebc50ff61b242872c8c8111ea22a5e26df0a0abb9704d5/pi_heif-0.16.0-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:297569be55f1559e593c4d425b2aa46c7d8ea296139b65cef4e0c1c6882c857e", size = 450566, upload-time = "2024-04-01T20:43:52.431Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/52/92/36682ff8f4a4f3c597e4a0f5a121cbe52ac7d4bece3754115f8e807d8fa3/pi_heif-0.16.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:964faa7c1568c0ab8018d63600e30abbc3ab122ee76ab7e2e22a4cb5bf96fe2c", size = 878658, upload-time = "2024-04-01T20:43:54.252Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/74/25/a3b9a56f2595fac0aa42455d358c47544da8dfc78b9445bcfc4e062544f6/pi_heif-0.16.0-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:d5797444882b9af2ca15cbb11659186a9142872aa647df6b6d02ea2f220ca8b3", size = 968933, upload-time = "2024-04-01T20:43:56.035Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/c8/d1/c4b9901e28b48b826b2b8f609d36de02b776d4c5c223799f3a40702e3cb0/pi_heif-0.16.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a88b4cf288b36eccf467e001b9775bbe46a99962d4dd87695fcdf4d3ab7f9797", size = 928137, upload-time = "2024-04-01T20:43:58.654Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/1e/57/f4895a039998d4fe23da444a5f66c18e13859f51fa0ba8823576d8345e16/pi_heif-0.16.0-cp310-cp310-manylinux_2_31_armv7l.whl", hash = "sha256:f3f2aa013e60ad85b20a5706fd0ac2bdf8c27e320b88f590ad8917e316ad902c", size = 687635, upload-time = "2024-04-01T20:44:00.089Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/f8/27/b52a4bdd218f958ac270625670f4232d6dc41e534c07d77af1fac3797525/pi_heif-0.16.0-cp310-cp310-musllinux_1_2_aarch64.whl", hash = "sha256:b19d55dfffdffd1509222ede94e5dbacb656d2c25c74bc1f5c4b4e9e40095ff9", size = 1676749, upload-time = "2024-04-01T20:44:01.903Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/5a/28/42e16a51b7e63c0598b52efdf7902ca137cb9a0a6a21c47b191b6bf0c79e/pi_heif-0.16.0-cp310-cp310-musllinux_1_2_armv7l.whl", hash = "sha256:b51baee4de96a400fe870b3654a614d85efa6d9298488113044450539f7b677e", size = 1413350, upload-time = "2024-04-01T20:44:03.561Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/cd/a2/4a7815e5ce8117754368429443508ca2aeb1c560a1177ee4b24458996e2f/pi_heif-0.16.0-cp310-cp310-musllinux_1_2_i686.whl", hash = "sha256:67951913bf1d33f6a9b7b2707cc76770e44196e97664940c9ad249546f83a39d", size = 1819637, upload-time = "2024-04-01T20:44:05.375Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/83/d5/c8db25fc789cd2b16da465a23e960f791653a56f8acfc217566dde0d77c7/pi_heif-0.16.0-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:3b8abf3920ad81bf679f953a0467f8b3803beb1b76575e290300bbe479d7715d", size = 1792176, upload-time = "2024-04-01T20:44:07.202Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/83/09/37b234bf97b18b4e9c8ab318c8e23cd3d4379da02b61cf13459c7d9e77d0/pi_heif-0.16.0-cp310-cp310-win_amd64.whl", hash = "sha256:152005cebf2c0ed7fca1cf14b034a82933ee103e50b6dfd77d2cb74e66da0984", size = 1574706, upload-time = "2024-04-01T20:44:08.747Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/b2/aa/003a9476ae5e3ba8a3a3ec9edc212dc6e534cc7d7de1679cea417f0a0020/pi_heif-0.16.0-pp310-pypy310_pp73-macosx_10_10_x86_64.whl", hash = "sha256:37410ece6f5a8ca8ceb2345a7c2987f4aa826cbff75f5558cf953bf052b8b5bd", size = 502517, upload-time = "2024-04-01T20:45:33.96Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/9f/26/9f44f6115c08a4ebbe32f80f8d6c970473be0163d1592ffb15a17db14bf3/pi_heif-0.16.0-pp310-pypy310_pp73-macosx_12_0_arm64.whl", hash = "sha256:851d99710db245fe3228fa3c87200f3d47cd1f0b710e96ecb8a7d5aea75d4f37", size = 447339, upload-time = "2024-04-01T20:45:35.619Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/ae/99/98f566ce0b663f69a4c0d0f672c4d0e572039f96d556912e085d9299a3fe/pi_heif-0.16.0-pp310-pypy310_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:de925776b6d433c50c7af73cd0e870c2068aea0af6b728512c6a50901ec45f36", size = 842037, upload-time = "2024-04-01T20:45:37.87Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/75/69/27d12ec17ccdef28c5e73b009ccea567bcca82b465432e0228f8923938f4/pi_heif-0.16.0-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b490757c7b53abcb3c2d63bcd4edb51acf9bffcb7cdc66ab44fabb5e0ec76ae0", size = 889461, upload-time = "2024-04-01T20:45:39.899Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/21/fa/d4e2f9459dffeb11920840570b41995c6f27aff5b5417fd34ece4a60e5bd/pi_heif-0.16.0-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:29ac1cda359eea13ddfbfd7ab05f1b379fc85986c083911b95fb0ba07a9ccb6f", size = 1575070, upload-time = "2024-04-01T20:45:42.045Z" },
-]
-
-[[package]]
-name = "pikepdf"
-version = "8.4.1"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "deprecation" },
-    { name = "lxml" },
-    { name = "packaging" },
-    { name = "pillow" },
-]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/0a/81/c29a09060c763b2a5479b64223f8c9f3565d73a5a35118c709295cf7b88b/pikepdf-8.4.1.tar.gz", hash = "sha256:3f8b46875426a307585f64b97c1937c9d488982f832793387ee2836a594b8ddf", size = 2853305, upload-time = "2023-09-10T08:10:11.392Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/64/c2/380f64bf1c13a69c8eafacb4b88634f95842b072ad270c79803e468cddcc/pikepdf-8.4.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:35d306fc41adb50e556fe4050645cde37a3dd407526422e44728823045710ebd", size = 3504658, upload-time = "2023-09-10T08:08:52.401Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/63/91/9b067441be7409fe02cf15308184cf1c4deb9d6750075112a1b503510cfc/pikepdf-8.4.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:183cf6e9b1b910257e821079c13b7560f5f39f36dc79b5389cd3cb17fb674814", size = 3164574, upload-time = "2023-09-10T08:08:55.803Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/e9/14/896a2a7872c4813488d43676ac6a4bb2f19d8adc617a842d2f6f781e5422/pikepdf-8.4.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8b07aa656bb488495ac995dae6cbb1d7c6161944a581e0be7f9f6c3ef1c0aeb6", size = 2149995, upload-time = "2023-09-10T08:08:57.545Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/a0/65/a6b8437fbc42964791bb6090ebd8e476ae930aa1fce232ef65e194bd26fa/pikepdf-8.4.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:56597a0f478c89d4371cd332d580f359d85f66035c7730397bf5660ff3b16938", size = 2296775, upload-time = "2023-09-10T08:08:59.538Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/db/70/c0846c2fe0b61a7aa00ad4928f4429926de3fe8498515b94b6e92e5da651/pikepdf-8.4.1-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:52d8c24504f4d9ece15cd56bf99ccda602d4ca1cb54a4fa69c69ec1ada9add1c", size = 3110028, upload-time = "2023-09-10T08:09:01.338Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/81/c5/28f5894e3e7649a88ec40e3cf9fe1346d238483c1b26008862474892b364/pikepdf-8.4.1-cp310-cp310-win_amd64.whl", hash = "sha256:d2e4304287780f56f7b99ee63270ec0fc96e01c1ae9fd2b6d598cced15f56fb0", size = 3355351, upload-time = "2023-09-10T08:09:03.848Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/45/58/5a7164b35e49627f3326c446c90e4af7e530b589e4c8833ce0792a6d0f5e/pikepdf-8.4.1-pp310-pypy310_pp73-macosx_10_9_x86_64.whl", hash = "sha256:202b0d0a37123c2ae3cf8856e2944263351066cf95e32164d72a549f6ad1f4e2", size = 3499742, upload-time = "2023-09-10T08:09:51.787Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/fa/80/f4533d5cea6b4af6d1cd6ed0f9938fc8da2187ec6aa8b30344a018acefc1/pikepdf-8.4.1-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:445a1a9c5d1d82828ecaf988b29bf82253e55bf80862c6529359bce42ad59bd5", size = 2265815, upload-time = "2023-09-10T08:09:53.817Z" },
 ]
 
 [[package]]
@@ -3545,25 +3276,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pycocotools"
-version = "2.0.8"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "matplotlib" },
-    { name = "numpy" },
-]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/6b/1a/cdfce175d663568215b3a6b6170ad2a526932cc1021dffabda56a5c3f189/pycocotools-2.0.8.tar.gz", hash = "sha256:8f2bcedb786ba26c367a3680f9c4eb5b2ad9dccb2b34eaeb205e0a021e1dfb8d", size = 24993, upload-time = "2024-06-17T04:26:51.711Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/e1/03/8738c457ca04aed97f79781827b20862e78262da7ccc8062bcc6d6e857e2/pycocotools-2.0.8-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:9a66886f45b04cee1ff0492e9f5e25d430d8aa3eb63e63c4ebc620945caa11b9", size = 162301, upload-time = "2024-06-17T04:26:15.323Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/ad/0a/bcd4592a85896a4281bb8ec5dd034ce12d82bb26b6e73e73b3c435377db1/pycocotools-2.0.8-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:257130b65b7b0f122ce1ed62942867ca9789e56a68109682796cc85c9770c74a", size = 410644, upload-time = "2024-06-17T04:26:17.049Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/6a/03/6c0bf810a5df7876caaf11f5b113e7ffd4b2fa9767d360489c6fdcefe8e5/pycocotools-2.0.8-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:663c14cd471913aabecb17ddb52b3b254a65dcaba26ccfea408c52c75cc3862c", size = 427769, upload-time = "2024-06-17T04:26:18.329Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/03/76/587579abcf3bab2b5a9b89ee28e78bef3df3198d724a4980b0875f69586b/pycocotools-2.0.8-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:35a6ef931448632efe1c83eb2ac3c37c53b3c080a5432bc6ff1858944a603a2d", size = 408920, upload-time = "2024-06-17T04:26:19.845Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/6d/d2/57421216b31920eb942bd8a81cead5e9b42dfd433e15d682cd7e156b6f84/pycocotools-2.0.8-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:e7b4ee8b15539d6f789857faefe7d3eef81755f7b17f60903798524e4f321a5c", size = 426178, upload-time = "2024-06-17T04:26:21.537Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/8d/06/b9bdedfdcbf2fb5ba55252f1a5ff5e8e02ae204fe392f7b4f5babbc14a2a/pycocotools-2.0.8-cp310-cp310-win_amd64.whl", hash = "sha256:889edd2dbf61f4d2fe77c2e8e5608476903d1911d2ed00f9911354eff23f2423", size = 84484, upload-time = "2024-06-17T04:26:23.078Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/05/90/52de34f2f032e3de957c953fd1d4a9025175622714e5023ba4d6a9a96ece/pycocotools-2.0.8-cp310-cp310-win_arm64.whl", hash = "sha256:52e06a833fad735485cad5c1f8fe40e2b586261b2856806b5d6923b0b5a3c971", size = 70968, upload-time = "2024-06-17T04:26:24.494Z" },
-]
-
-[[package]]
 name = "pycparser"
 version = "2.22"
 source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
@@ -3702,7 +3414,7 @@ wheels = [
 
 [[package]]
 name = "pymilvus"
-version = "2.4.10"
+version = "2.5.10"
 source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
 dependencies = [
     { name = "grpcio" },
@@ -3713,9 +3425,9 @@ dependencies = [
     { name = "setuptools" },
     { name = "ujson" },
 ]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/cc/c1/12b9b5e8edf715cf95b5fae888d74dc46090f0221bbe4eba1bed54601f2c/pymilvus-2.4.10.tar.gz", hash = "sha256:24a26234c94084d147945e208250a53414cc0e53e6e49460192c0a934786968d", size = 1223485, upload-time = "2024-11-26T08:17:51.378Z" }
+sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/da/e2/88f126a08d8eefba7341e3eb323406a227146094aab7137a2b91d882e98d/pymilvus-2.5.10.tar.gz", hash = "sha256:cc44ad776aeab781ee4c4a4d334b73e746066ab2fb6722c5311f02efa6fc54a2", size = 1260364, upload-time = "2025-05-23T06:08:06.992Z" }
 wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/97/1f/9fc078e1f2a56d938c8de7d4f5226b36daef7af9f3a59c1259f0e9997425/pymilvus-2.4.10-py3-none-any.whl", hash = "sha256:737b701a758a88b73fe8dd7db7c0ec246365f51a3a71aff55417da347f9adee5", size = 205201, upload-time = "2024-11-26T08:17:49.833Z" },
+    { url = "https://mirrors.ustc.edu.cn/pypi/packages/b0/4b/847704930ad8ddd0d0975e9a3a5e3fe704f642debe97454135c2b9ee7081/pymilvus-2.5.10-py3-none-any.whl", hash = "sha256:7da540f93068871cda3941602c55227aeaafb66f2f0d9c05e8f9db783716b100", size = 227635, upload-time = "2025-05-23T06:08:05.397Z" },
 ]
 
 [[package]]
@@ -3785,26 +3497,6 @@ dependencies = [
 sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/e0/c8/543f8ae1cd9e182e9f979d9ab1df18e3445350471abadbdabc0166ae5741/pypdf-5.5.0.tar.gz", hash = "sha256:8ce6a18389f7394fd09a1d4b7a34b097b11c19088a23cfd09e5008f85893e254", size = 5021690, upload-time = "2025-05-11T14:00:42.043Z" }
 wheels = [
     { url = "https://mirrors.ustc.edu.cn/pypi/packages/a1/4e/931b90b51e3ebc69699be926b3d5bfdabae2d9c84337fd0c9fb98adbf70c/pypdf-5.5.0-py3-none-any.whl", hash = "sha256:2f61f2d32dde00471cd70b8977f98960c64e84dd5ba0d070e953fcb4da0b2a73", size = 303371, upload-time = "2025-05-11T14:00:40.064Z" },
-]
-
-[[package]]
-name = "pypdfium2"
-version = "4.30.1"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/55/d4/905e621c62598a08168c272b42fc00136c8861cfce97afb2a1ecbd99487a/pypdfium2-4.30.1.tar.gz", hash = "sha256:5f5c7c6d03598e107d974f66b220a49436aceb191da34cda5f692be098a814ce", size = 164854, upload-time = "2024-12-19T19:28:11.459Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/30/8e/3ce0856b3af0f058dd3655ce57d31d1dbde4d4bd0e172022ffbf1b58a4b9/pypdfium2-4.30.1-py3-none-macosx_10_13_x86_64.whl", hash = "sha256:e07c47633732cc18d890bb7e965ad28a9c5a932e548acb928596f86be2e5ae37", size = 2889836, upload-time = "2024-12-19T19:27:39.531Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/c2/6a/f6995b21f9c6c155487ce7df70632a2df1ba49efcb291b9943ea45f28b15/pypdfium2-4.30.1-py3-none-macosx_11_0_arm64.whl", hash = "sha256:5ea2d44e96d361123b67b00f527017aa9c847c871b5714e013c01c3eb36a79fe", size = 2769232, upload-time = "2024-12-19T19:27:43.227Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/53/91/79060923148e6d380b8a299b32bba46d70aac5fe1cd4f04320bcbd1a48d3/pypdfium2-4.30.1-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1de7a3a36803171b3f66911131046d65a732f9e7834438191cb58235e6163c4e", size = 2847531, upload-time = "2024-12-19T19:27:46.372Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/a8/6c/93507f87c159e747eaab54352c0fccbaec3f1b3749d0bb9085a47899f898/pypdfium2-4.30.1-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:b8a4231efb13170354f568c722d6540b8d5b476b08825586d48ef70c40d16e03", size = 2636266, upload-time = "2024-12-19T19:27:49.767Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/24/dc/d56f74a092f2091e328d6485f16562e2fc51cffb0ad6d5c616d80c1eb53c/pypdfium2-4.30.1-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:6f434a4934e8244aa95343ffcf24e9ad9f120dbb4785f631bb40a88c39292493", size = 2919296, upload-time = "2024-12-19T19:27:51.767Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/be/d9/a2f1ee03d47fbeb48bcfde47ed7155772739622cfadf7135a84ba6a97824/pypdfium2-4.30.1-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f454032a0bc7681900170f67d8711b3942824531e765f91c2f5ce7937f999794", size = 2866119, upload-time = "2024-12-19T19:27:53.561Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/01/47/6aa019c32aa39d3f33347c458c0c5887e84096cbe444456402bc97e66704/pypdfium2-4.30.1-py3-none-musllinux_1_1_aarch64.whl", hash = "sha256:bbf9130a72370ee9d602e39949b902db669a2a1c24746a91e5586eb829055d9f", size = 6228684, upload-time = "2024-12-19T19:27:56.781Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/4c/07/2954c15b3f7c85ceb80cad36757fd41b3aba0dd14e68f4bed9ce3f2e7e74/pypdfium2-4.30.1-py3-none-musllinux_1_1_i686.whl", hash = "sha256:5cb52884b1583b96e94fd78542c63bb42e06df5e8f9e52f8f31f5ad5a1e53367", size = 6231815, upload-time = "2024-12-19T19:28:00.351Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/b4/9b/b4667e95754624f4af5a912001abba90c046e1c80d4a4e887f0af664ffec/pypdfium2-4.30.1-py3-none-musllinux_1_1_x86_64.whl", hash = "sha256:1a9e372bd4867ff223cc8c338e33fe11055dad12f22885950fc27646cc8d9122", size = 6313429, upload-time = "2024-12-19T19:28:02.536Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/43/38/f9e77cf55ba5546a39fa659404b78b97de2ca344848271e7731efb0954cd/pypdfium2-4.30.1-py3-none-win32.whl", hash = "sha256:421f1cf205e213e07c1f2934905779547f4f4a2ff2f59dde29da3d511d3fc806", size = 2834989, upload-time = "2024-12-19T19:28:04.657Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/a4/f3/8d3a350efb4286b5ebdabcf6736f51d8e3b10dbe68804c6930b00f5cf329/pypdfium2-4.30.1-py3-none-win_amd64.whl", hash = "sha256:598a7f20264ab5113853cba6d86c4566e4356cad037d7d1f849c8c9021007e05", size = 2960157, upload-time = "2024-12-19T19:28:07.772Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/e1/6b/2706497c86e8d69fb76afe5ea857fe1794621aa0f3b1d863feb953fe0f22/pypdfium2-4.30.1-py3-none-win_arm64.whl", hash = "sha256:c2b6d63f6d425d9416c08d2511822b54b8e3ac38e639fc41164b1d75584b3a8c", size = 2814810, upload-time = "2024-12-19T19:28:09.857Z" },
 ]
 
 [[package]]
@@ -4114,6 +3806,27 @@ wheels = [
 ]
 
 [[package]]
+name = "readability"
+version = "0.3.2"
+source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
+sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/6d/10/93cf95f579e43042b45d43c832aff7c55490ab1b38c6ce46f2f35245281f/readability-0.3.2.tar.gz", hash = "sha256:5aace888855cb3ef1b7dd059e41bbc6ac1f7daba321b2d24062ca75fdf6e576d", size = 36116, upload-time = "2025-01-14T13:55:02.702Z" }
+
+[[package]]
+name = "readability-lxml"
+version = "0.8.4.1"
+source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
+dependencies = [
+    { name = "chardet" },
+    { name = "cssselect" },
+    { name = "lxml" },
+    { name = "lxml-html-clean" },
+]
+sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/55/3e/dc87d97532ddad58af786ec89c7036182e352574c1cba37bf2bf783d2b15/readability_lxml-0.8.4.1.tar.gz", hash = "sha256:9d2924f5942dd7f37fb4da353263b22a3e877ccf922d0e45e348e4177b035a53", size = 22874, upload-time = "2025-05-03T21:11:45.493Z" }
+wheels = [
+    { url = "https://mirrors.ustc.edu.cn/pypi/packages/c7/75/2cc58965097e351415af420be81c4665cf80da52a17ef43c01ffbe2caf91/readability_lxml-0.8.4.1-py3-none-any.whl", hash = "sha256:874c0cea22c3bf2b78c7f8df831bfaad3c0a89b7301d45a188db581652b4b465", size = 19912, upload-time = "2025-05-03T21:11:43.993Z" },
+]
+
+[[package]]
 name = "realtime"
 version = "1.0.0"
 source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
@@ -4252,28 +3965,6 @@ wheels = [
     { url = "https://mirrors.ustc.edu.cn/pypi/packages/d9/2b/162fa86d2639076667c9aa59196c020dc6d7023ac8f342416c2f5ec4bda0/ruff-0.11.10-py3-none-win32.whl", hash = "sha256:dc061a98d32a97211af7e7f3fa1d4ca2fcf919fb96c28f39551f35fc55bdbc19", size = 10494958, upload-time = "2025-05-15T14:08:49.601Z" },
     { url = "https://mirrors.ustc.edu.cn/pypi/packages/24/f3/66643d8f32f50a4b0d09a4832b7d919145ee2b944d43e604fbd7c144d175/ruff-0.11.10-py3-none-win_amd64.whl", hash = "sha256:5cc725fbb4d25b0f185cb42df07ab6b76c4489b4bfb740a175f3a59c70e8a224", size = 11650285, upload-time = "2025-05-15T14:08:52.392Z" },
     { url = "https://mirrors.ustc.edu.cn/pypi/packages/95/3a/2e8704d19f376c799748ff9cb041225c1d59f3e7711bc5596c8cfdc24925/ruff-0.11.10-py3-none-win_arm64.whl", hash = "sha256:ef69637b35fb8b210743926778d0e45e1bffa850a7c61e428c6b971549b5f5d1", size = 10765278, upload-time = "2025-05-15T14:08:54.56Z" },
-]
-
-[[package]]
-name = "safetensors"
-version = "0.5.3"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/71/7e/2d5d6ee7b40c0682315367ec7475693d110f512922d582fef1bd4a63adc3/safetensors-0.5.3.tar.gz", hash = "sha256:b6b0d6ecacec39a4fdd99cc19f4576f5219ce858e6fd8dbe7609df0b8dc56965", size = 67210, upload-time = "2025-02-26T09:15:13.155Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/18/ae/88f6c49dbd0cc4da0e08610019a3c78a7d390879a919411a410a1876d03a/safetensors-0.5.3-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:bd20eb133db8ed15b40110b7c00c6df51655a2998132193de2f75f72d99c7073", size = 436917, upload-time = "2025-02-26T09:15:03.702Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/b8/3b/11f1b4a2f5d2ab7da34ecc062b0bc301f2be024d110a6466726bec8c055c/safetensors-0.5.3-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:21d01c14ff6c415c485616b8b0bf961c46b3b343ca59110d38d744e577f9cce7", size = 418419, upload-time = "2025-02-26T09:15:01.765Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/5d/9a/add3e6fef267658075c5a41573c26d42d80c935cdc992384dfae435feaef/safetensors-0.5.3-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:11bce6164887cd491ca75c2326a113ba934be596e22b28b1742ce27b1d076467", size = 459493, upload-time = "2025-02-26T09:14:51.812Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/df/5c/bf2cae92222513cc23b3ff85c4a1bb2811a2c3583ac0f8e8d502751de934/safetensors-0.5.3-cp38-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:4a243be3590bc3301c821da7a18d87224ef35cbd3e5f5727e4e0728b8172411e", size = 472400, upload-time = "2025-02-26T09:14:53.549Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/58/11/7456afb740bd45782d0f4c8e8e1bb9e572f1bf82899fb6ace58af47b4282/safetensors-0.5.3-cp38-abi3-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:8bd84b12b1670a6f8e50f01e28156422a2bc07fb16fc4e98bded13039d688a0d", size = 522891, upload-time = "2025-02-26T09:14:55.717Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/57/3d/fe73a9d2ace487e7285f6e157afee2383bd1ddb911b7cb44a55cf812eae3/safetensors-0.5.3-cp38-abi3-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:391ac8cab7c829452175f871fcaf414aa1e292b5448bd02620f675a7f3e7abb9", size = 537694, upload-time = "2025-02-26T09:14:57.036Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/a6/f8/dae3421624fcc87a89d42e1898a798bc7ff72c61f38973a65d60df8f124c/safetensors-0.5.3-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:cead1fa41fc54b1e61089fa57452e8834f798cb1dc7a09ba3524f1eb08e0317a", size = 471642, upload-time = "2025-02-26T09:15:00.544Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/ce/20/1fbe16f9b815f6c5a672f5b760951e20e17e43f67f231428f871909a37f6/safetensors-0.5.3-cp38-abi3-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:1077f3e94182d72618357b04b5ced540ceb71c8a813d3319f1aba448e68a770d", size = 502241, upload-time = "2025-02-26T09:14:58.303Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/5f/18/8e108846b506487aa4629fe4116b27db65c3dde922de2c8e0cc1133f3f29/safetensors-0.5.3-cp38-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:799021e78287bac619c7b3f3606730a22da4cda27759ddf55d37c8db7511c74b", size = 638001, upload-time = "2025-02-26T09:15:05.79Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/82/5a/c116111d8291af6c8c8a8b40628fe833b9db97d8141c2a82359d14d9e078/safetensors-0.5.3-cp38-abi3-musllinux_1_2_armv7l.whl", hash = "sha256:df26da01aaac504334644e1b7642fa000bfec820e7cef83aeac4e355e03195ff", size = 734013, upload-time = "2025-02-26T09:15:07.892Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/7d/ff/41fcc4d3b7de837963622e8610d998710705bbde9a8a17221d85e5d0baad/safetensors-0.5.3-cp38-abi3-musllinux_1_2_i686.whl", hash = "sha256:32c3ef2d7af8b9f52ff685ed0bc43913cdcde135089ae322ee576de93eae5135", size = 670687, upload-time = "2025-02-26T09:15:09.979Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/40/ad/2b113098e69c985a3d8fbda4b902778eae4a35b7d5188859b4a63d30c161/safetensors-0.5.3-cp38-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:37f1521be045e56fc2b54c606d4455573e717b2d887c579ee1dbba5f868ece04", size = 643147, upload-time = "2025-02-26T09:15:11.185Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/0a/0c/95aeb51d4246bd9a3242d3d8349c1112b4ee7611a4b40f0c5c93b05f001d/safetensors-0.5.3-cp38-abi3-win32.whl", hash = "sha256:cfc0ec0846dcf6763b0ed3d1846ff36008c6e7290683b61616c4b040f6a54ace", size = 296677, upload-time = "2025-02-26T09:15:16.554Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/69/e2/b011c38e5394c4c18fb5500778a55ec43ad6106126e74723ffaee246f56e/safetensors-0.5.3-cp38-abi3-win_amd64.whl", hash = "sha256:836cbbc320b47e80acd40e44c8682db0e8ad7123209f69b093def21ec7cafd11", size = 308878, upload-time = "2025-02-26T09:15:14.99Z" },
 ]
 
 [[package]]
@@ -4508,6 +4199,15 @@ wheels = [
 ]
 
 [[package]]
+name = "tabulate"
+version = "0.9.0"
+source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
+sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/ec/fe/802052aecb21e3797b8f7902564ab6ea0d60ff8ca23952079064155d1ae1/tabulate-0.9.0.tar.gz", hash = "sha256:0095b12bf5966de529c0feb1fa08671671b3368eec77d7ef7ab114be2c068b3c", size = 81090, upload-time = "2022-10-06T17:21:48.54Z" }
+wheels = [
+    { url = "https://mirrors.ustc.edu.cn/pypi/packages/40/44/4a5f08c96eb108af5cb50b41f76142f0afa346dfa99d5296fe7202a11854/tabulate-0.9.0-py3-none-any.whl", hash = "sha256:024ca478df22e9340661486f85298cff5f6dcdba14f3813e8830015b9ed1948f", size = 35252, upload-time = "2022-10-06T17:21:44.262Z" },
+]
+
+[[package]]
 name = "tenacity"
 version = "8.3.0"
 source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
@@ -4556,22 +4256,6 @@ wheels = [
 ]
 
 [[package]]
-name = "timm"
-version = "1.0.15"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "huggingface-hub" },
-    { name = "pyyaml" },
-    { name = "safetensors" },
-    { name = "torch" },
-    { name = "torchvision" },
-]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/bc/0c/66b0f9b4a4cb9ffdac7b52b17b37c7d3c4f75623b469e388b0c6d89b4e88/timm-1.0.15.tar.gz", hash = "sha256:756a3bc30c96565f056e608a9b559daed904617eaadb6be536f96874879b1055", size = 2230258, upload-time = "2025-02-23T05:05:55.959Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/6c/d0/179abca8b984b3deefd996f362b612c39da73b60f685921e6cd58b6125b4/timm-1.0.15-py3-none-any.whl", hash = "sha256:5a3dc460c24e322ecc7fd1f3e3eb112423ddee320cb059cc1956fbc9731748ef", size = 2361373, upload-time = "2025-02-23T05:05:53.601Z" },
-]
-
-[[package]]
 name = "tokenizers"
 version = "0.21.1"
 source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
@@ -4603,56 +4287,6 @@ source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
 sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/18/87/302344fed471e44a87289cf4967697d07e532f2421fdaf868a303cbae4ff/tomli-2.2.1.tar.gz", hash = "sha256:cd45e1dc79c835ce60f7404ec8119f2eb06d38b1deba146f07ced3bbc44505ff", size = 17175, upload-time = "2024-11-27T22:38:36.873Z" }
 wheels = [
     { url = "https://mirrors.ustc.edu.cn/pypi/packages/6e/c2/61d3e0f47e2b74ef40a68b9e6ad5984f6241a942f7cd3bbfbdbd03861ea9/tomli-2.2.1-py3-none-any.whl", hash = "sha256:cb55c73c5f4408779d0cf3eef9f762b9c9f147a77de7b258bef0a5628adc85cc", size = 14257, upload-time = "2024-11-27T22:38:35.385Z" },
-]
-
-[[package]]
-name = "torch"
-version = "2.7.0"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "filelock" },
-    { name = "fsspec" },
-    { name = "jinja2" },
-    { name = "networkx" },
-    { name = "nvidia-cublas-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cuda-cupti-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cuda-nvrtc-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cuda-runtime-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cudnn-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cufft-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cufile-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-curand-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cusolver-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cusparse-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-cusparselt-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-nccl-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-nvjitlink-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "nvidia-nvtx-cu12", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "sympy" },
-    { name = "triton", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
-    { name = "typing-extensions" },
-]
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/46/c2/3fb87940fa160d956ee94d644d37b99a24b9c05a4222bf34f94c71880e28/torch-2.7.0-cp310-cp310-manylinux_2_28_aarch64.whl", hash = "sha256:c9afea41b11e1a1ab1b258a5c31afbd646d6319042bfe4f231b408034b51128b", size = 99158447, upload-time = "2025-04-23T14:35:10.557Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/cc/2c/91d1de65573fce563f5284e69d9c56b57289625cffbbb6d533d5d56c36a5/torch-2.7.0-cp310-cp310-manylinux_2_28_x86_64.whl", hash = "sha256:0b9960183b6e5b71239a3e6c883d8852c304e691c0b2955f7045e8a6d05b9183", size = 865164221, upload-time = "2025-04-23T14:33:27.864Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/7f/7e/1b1cc4e0e7cc2666cceb3d250eef47a205f0821c330392cf45eb08156ce5/torch-2.7.0-cp310-cp310-win_amd64.whl", hash = "sha256:2ad79d0d8c2a20a37c5df6052ec67c2078a2c4e9a96dd3a8b55daaff6d28ea29", size = 212521189, upload-time = "2025-04-23T14:34:53.898Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/dc/0b/b2b83f30b8e84a51bf4f96aa3f5f65fdf7c31c591cc519310942339977e2/torch-2.7.0-cp310-none-macosx_11_0_arm64.whl", hash = "sha256:34e0168ed6de99121612d72224e59b2a58a83dae64999990eada7260c5dd582d", size = 68559462, upload-time = "2025-04-23T14:35:39.889Z" },
-]
-
-[[package]]
-name = "torchvision"
-version = "0.22.0"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "numpy" },
-    { name = "pillow" },
-    { name = "torch" },
-]
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/eb/03/a514766f068b088180f273913e539d08e830be3ae46ef8577ea62584a27c/torchvision-0.22.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:72256f1d7ff510b16c9fb4dd488584d0693f40c792f286a9620674438a81ccca", size = 1947829, upload-time = "2025-04-23T14:42:04.652Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/a3/e5/ec4b52041cd8c440521b75864376605756bd2d112d6351ea6a1ab25008c1/torchvision-0.22.0-cp310-cp310-manylinux_2_28_aarch64.whl", hash = "sha256:810ea4af3bc63cf39e834f91f4218ff5999271caaffe2456247df905002bd6c0", size = 2512604, upload-time = "2025-04-23T14:41:56.515Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/e7/9e/e898a377e674da47e95227f3d7be2c49550ce381eebd8c7831c1f8bb7d39/torchvision-0.22.0-cp310-cp310-manylinux_2_28_x86_64.whl", hash = "sha256:6fbca169c690fa2b9b8c39c0ad76d5b8992296d0d03df01e11df97ce12b4e0ac", size = 7446399, upload-time = "2025-04-23T14:41:49.793Z" },
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/c7/ec/2cdb90c6d9d61410b3df9ca67c210b60bf9b07aac31f800380b20b90386c/torchvision-0.22.0-cp310-cp310-win_amd64.whl", hash = "sha256:8c869df2e8e00f7b1d80a34439e6d4609b50fe3141032f50b38341ec2b59404e", size = 1716700, upload-time = "2025-04-23T14:42:03.562Z" },
 ]
 
 [[package]]
@@ -4693,38 +4327,6 @@ source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
 sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/eb/79/72064e6a701c2183016abbbfedaba506d81e30e232a68c9f0d6f6fcd1574/traitlets-5.14.3.tar.gz", hash = "sha256:9ed0579d3502c94b4b3732ac120375cda96f923114522847de4b3bb98b96b6b7", size = 161621, upload-time = "2024-04-19T11:11:49.746Z" }
 wheels = [
     { url = "https://mirrors.ustc.edu.cn/pypi/packages/00/c0/8f5d070730d7836adc9c9b6408dec68c6ced86b304a9b26a14df072a6e8c/traitlets-5.14.3-py3-none-any.whl", hash = "sha256:b74e89e397b1ed28cc831db7aea759ba6640cb3de13090ca145426688ff1ac4f", size = 85359, upload-time = "2024-04-19T11:11:46.763Z" },
-]
-
-[[package]]
-name = "transformers"
-version = "4.51.3"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "filelock" },
-    { name = "huggingface-hub" },
-    { name = "numpy" },
-    { name = "packaging" },
-    { name = "pyyaml" },
-    { name = "regex" },
-    { name = "requests" },
-    { name = "safetensors" },
-    { name = "tokenizers" },
-    { name = "tqdm" },
-]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/f1/11/7414d5bc07690002ce4d7553602107bf969af85144bbd02830f9fb471236/transformers-4.51.3.tar.gz", hash = "sha256:e292fcab3990c6defe6328f0f7d2004283ca81a7a07b2de9a46d67fd81ea1409", size = 8941266, upload-time = "2025-04-14T08:15:00.485Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/a9/b6/5257d04ae327b44db31f15cce39e6020cc986333c715660b1315a9724d82/transformers-4.51.3-py3-none-any.whl", hash = "sha256:fd3279633ceb2b777013234bbf0b4f5c2d23c4626b05497691f00cfda55e8a83", size = 10383940, upload-time = "2025-04-14T08:13:43.023Z" },
-]
-
-[[package]]
-name = "triton"
-version = "3.3.0"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "setuptools", marker = "(platform_machine != 'arm64' and sys_platform == 'darwin') or (platform_machine != 'aarch64' and sys_platform == 'linux') or (sys_platform != 'darwin' and sys_platform != 'linux')" },
-]
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/76/04/d54d3a6d077c646624dc9461b0059e23fd5d30e0dbe67471e3654aec81f9/triton-3.3.0-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:fad99beafc860501d7fcc1fb7045d9496cbe2c882b1674640304949165a916e7", size = 156441993, upload-time = "2025-04-09T20:27:25.107Z" },
 ]
 
 [[package]]
@@ -4898,29 +4500,6 @@ wheels = [
     { url = "https://mirrors.ustc.edu.cn/pypi/packages/cb/88/061a9dedd4e8cc0c31097c3275a9ef1fd7307e26afac5cd582487386e1b8/unstructured-0.17.2-py3-none-any.whl", hash = "sha256:527dd26a4b273aebef2f9119c9d4f0d0ce17640038d92296d23abe89be123840", size = 1771563, upload-time = "2025-03-20T16:55:56.751Z" },
 ]
 
-[package.optional-dependencies]
-all-docs = [
-    { name = "effdet" },
-    { name = "google-cloud-vision" },
-    { name = "markdown" },
-    { name = "networkx" },
-    { name = "onnx" },
-    { name = "onnxruntime" },
-    { name = "openpyxl" },
-    { name = "pandas" },
-    { name = "pdf2image" },
-    { name = "pdfminer-six" },
-    { name = "pi-heif" },
-    { name = "pikepdf" },
-    { name = "pypandoc" },
-    { name = "pypdf" },
-    { name = "python-docx" },
-    { name = "python-pptx" },
-    { name = "unstructured-inference" },
-    { name = "unstructured-pytesseract" },
-    { name = "xlrd" },
-]
-
 [[package]]
 name = "unstructured-client"
 version = "0.35.0"
@@ -4937,46 +4516,6 @@ dependencies = [
 sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/ac/d7/5bef2ad44bc489e8afd5ef27419c9f45f94b99abc2cb4fe892a4f72a23c3/unstructured_client-0.35.0.tar.gz", hash = "sha256:625612b0f242f090be746a95382a709f638b16d66aa9278c84769fc0b2373b42", size = 82312, upload-time = "2025-05-14T17:12:19.668Z" }
 wheels = [
     { url = "https://mirrors.ustc.edu.cn/pypi/packages/20/02/8e4ab06833b7df58a614dcbd0ca9a78a1d17104cf612e7b50a85ffae5053/unstructured_client-0.35.0-py3-none-any.whl", hash = "sha256:80b3c496b659fdc730590a49d83128007d360c7c041f72f67603076b627d84cc", size = 192061, upload-time = "2025-05-14T17:12:18.202Z" },
-]
-
-[[package]]
-name = "unstructured-inference"
-version = "1.0.2"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "accelerate" },
-    { name = "huggingface-hub" },
-    { name = "matplotlib" },
-    { name = "numpy" },
-    { name = "onnx" },
-    { name = "onnxruntime" },
-    { name = "opencv-python" },
-    { name = "pandas" },
-    { name = "pdfminer-six" },
-    { name = "pypdfium2" },
-    { name = "python-multipart" },
-    { name = "rapidfuzz" },
-    { name = "scipy" },
-    { name = "timm" },
-    { name = "torch" },
-    { name = "transformers" },
-]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/0b/cd/eb3135ae625bab31abb2eeb98a23a020bce7c64b849b8c011f16002be880/unstructured_inference-1.0.2.tar.gz", hash = "sha256:6e131d1cc83ac30d0be62f0d645415d215a309fa9f92b3143bdb87ab7f5de8e7", size = 43587, upload-time = "2025-05-19T16:09:54.376Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/be/bb/36c069aa586aadfe431932e6cd136bb95f475e52dd9a88cdbec4cc3fb0ac/unstructured_inference-1.0.2-py3-none-any.whl", hash = "sha256:548514d3d10e7935213bcdf05e1dd7ba2671047e08e7d915e9ed8f5e263a5dec", size = 47645, upload-time = "2025-05-19T16:09:53.303Z" },
-]
-
-[[package]]
-name = "unstructured-pytesseract"
-version = "0.3.15"
-source = { registry = "https://mirrors.ustc.edu.cn/pypi/simple" }
-dependencies = [
-    { name = "packaging" },
-    { name = "pillow" },
-]
-sdist = { url = "https://mirrors.ustc.edu.cn/pypi/packages/ef/b1/4b3a976b76549f22c3f5493a622603617cbe08804402978e1dac9c387997/unstructured.pytesseract-0.3.15.tar.gz", hash = "sha256:4b81bc76cfff4e2ef37b04863f0e48bd66184c0b39c3b2b4e017483bca1a7394", size = 15703, upload-time = "2025-03-05T00:59:17.516Z" }
-wheels = [
-    { url = "https://mirrors.ustc.edu.cn/pypi/packages/10/6d/adb955ecf60811a3735d508974bbb5358e7745b635dc001329267529c6f2/unstructured.pytesseract-0.3.15-py3-none-any.whl", hash = "sha256:a3f505c5efb7ff9f10379051a7dd6aa624b3be6b0f023ed6767cc80d0b1613d1", size = 14992, upload-time = "2025-03-05T00:59:15.962Z" },
 ]
 
 [[package]]
