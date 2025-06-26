@@ -2,6 +2,10 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
+from pydantic import BaseModel, field_validator
+from sqlmodel import Column, DateTime, Field, delete, func, or_, select, text, update
+from sqlmodel.sql.expression import Select, SelectOfScalar
+
 from bisheng.database.base import session_getter
 from bisheng.database.models.base import SQLModelSerializable
 from bisheng.database.models.knowledge_file import KnowledgeFile, KnowledgeFileDao
@@ -26,6 +30,12 @@ class StorageTypeEnum(Enum):
 
 
 
+class KnowledgeState(Enum):
+    UNPUBLISHED = 0
+    PUBLISHED = 1
+    COPYING = 2
+
+
 class KnowledgeBase(SQLModelSerializable):
     user_id: Optional[int] = Field(default=None, index=True)
     name: str = Field(index=True, min_length=1, max_length=30, description='知识库名, 最少一个字符，最多30个字符')
@@ -34,9 +44,10 @@ class KnowledgeBase(SQLModelSerializable):
     model: Optional[str] = Field(default=None, index=False)
     collection_name: Optional[str] = Field(default=None, index=False)
     index_name: Optional[str] = Field(default=None, index=False)
-    state: Optional[int] = Field(index=False, default=1, description='0 为未发布，1 为已发布, 2 为复制中')
     storage_type: Optional[int] = Field(index=False, default=0, description='对象存储类型: 0 为默认的minio，1 为CMS2.0，2 为CMS3.0')
     storage_config: Optional[Dict[str, Any]] = Field(default=None, sa_column=Column(JSON), description='对象存储配置，仅针对CMS生效')
+    state: Optional[int] = Field(index=False, default=KnowledgeState.PUBLISHED.value,
+                                 description='0 为未发布，1 为已发布, 2 为复制中')
     create_time: Optional[datetime] = Field(default=None, sa_column=Column(
         DateTime, nullable=False, server_default=text('CURRENT_TIMESTAMP')))
     update_time: Optional[datetime] = Field(default=None, sa_column=Column(

@@ -1,4 +1,3 @@
-import asyncio
 import json
 import os
 import time
@@ -35,7 +34,6 @@ from bisheng.database.models.assistant import Assistant, AssistantLink, Assistan
 from bisheng.database.models.flow import FlowDao, FlowStatus
 from bisheng.database.models.gpts_tools import GptsTools, GptsToolsDao, GptsToolsType
 from bisheng.database.models.knowledge import Knowledge, KnowledgeDao
-from bisheng.mcp_manage.constant import McpClientType
 from bisheng.mcp_manage.langchain.tool import McpTool
 from bisheng.mcp_manage.manager import ClientManager
 from bisheng.settings import settings
@@ -127,7 +125,7 @@ class AssistantAgent(AssistantUtils):
         """
         # 特殊处理下bisheng_code_interpreter的参数
         if tool.tool_key == 'bisheng_code_interpreter':
-            return {'minio': settings.get_knowledge().get('minio', {})}
+            return {'minio': settings.get_minio_conf().model_dump()}
         if not tool.extra:
             return {}
         params = json.loads(tool.extra)
