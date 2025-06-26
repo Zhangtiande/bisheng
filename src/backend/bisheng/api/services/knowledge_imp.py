@@ -540,7 +540,7 @@ def add_file_embedding(
         metadata.update({
             'file_id': db_file.id,
             'knowledge_id': f'{db_file.knowledge_id}',
-            'extra': extra_meta
+            'extra': extra_meta or "{}"
         })
 
     logger.info(f"add_vectordb file={db_file.id} file_name={db_file.file_name}")
