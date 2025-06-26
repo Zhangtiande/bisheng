@@ -28,6 +28,12 @@ import { useTable } from "../../util/hook";
 import { 
     Select, SelectContent, SelectGroup, SelectItem, SelectTrigger 
 } from "../../components/bs-ui/select";
+import {
+    RadioGroup, RadioGroupItem
+} from "@/components/bs-ui/radio";
+import { Label } from "@/components/bs-ui/label";
+import { Checkbox } from "@/components/bs-ui/checkBox";
+import { QuestionTooltip } from "@/components/bs-ui/tooltip";
 
 function CreateModal({ datalist, open, setOpen, onLoadEnd }) {
     const { t } = useTranslation()
@@ -47,6 +53,8 @@ function CreateModal({ datalist, open, setOpen, onLoadEnd }) {
         username: "",
         password: "",
     })
+    
+    const [enableSync, setEnableSync] = useState(false)
 
     // Fetch model data
     useEffect(() => {
@@ -105,8 +113,8 @@ function CreateModal({ datalist, open, setOpen, onLoadEnd }) {
         const nameErrors = errorlist.length
         if (desc.length > 200) errorlist.push(t('lib.descriptionLimit'))
 
-        // 新增：校验 A1-share2.0/A1-share3.0 字段
-        if (libType === "A1-share2.0" || libType === "A1-share3.0") {
+        // 新增：校验 A1-Share2.0/A1-Share3.0 字段
+        if (libType === "A1-Share2.0" || libType === "A1-Share3.0") {
             // host 校验：非空且为合法域名或IP
             if (!shareFields.host) {
                 errorlist.push("服务器地址不能为空")
@@ -154,12 +162,12 @@ function CreateModal({ datalist, open, setOpen, onLoadEnd }) {
         // 新增 storage_type 和 storage_config 字段
         let storage_type = 0
         let storage_config = undefined
-        if (libType === "A1-share2.0") {
+        if (libType === "A1-Share2.0") {
             storage_type = 1
-        } else if (libType === "A1-share3.0") {
+        } else if (libType === "A1-Share3.0") {
             storage_type = 2
         }
-        if (libType === "A1-share2.0" || libType === "A1-share3.0") {
+        if (libType === "A1-Share2.0" || libType === "A1-Share3.0") {
             storage_config = {
                 host: shareFields.host,
                 port: shareFields.port,
@@ -211,76 +219,93 @@ function CreateModal({ datalist, open, setOpen, onLoadEnd }) {
                 {/* 新增：知识库类型选择*/}
                 <div>
                     <label className="bisheng-label">知识库类型</label>
-                    <Select value={libType} onValueChange={setLibType}>
+                    <Select value={libType} onValueChange={val => {
+                        setLibType(val)
+                        // 切换类型时重置定时同步选项
+                        setEnableSync(false)
+                    }}>
                         <SelectTrigger className="col-span-3">
                             {{
                                 "default": "default",
-                                "A1-share2.0": "A1-share2.0",
-                                "A1-share3.0": "A1-share3.0"
+                                "A1-Share2.0": "A1-Share2.0",
+                                "A1-Share3.0": "A1-Share3.0"
                             }[libType] || "请选择类型"}
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
                                 <SelectItem value="default">default</SelectItem>
-                                <SelectItem value="A1-share2.0">A1-share2.0</SelectItem>
-                                <SelectItem value="A1-share3.0">A1-share3.0</SelectItem>
+                                <SelectItem value="A1-Share2.0">A1-share2.0</SelectItem>
+                                <SelectItem value="A1-Share3.0">A1-share3.0</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
                 </div>
                 {/* 新增：A1-share2.0/A1-share3.0字段 */}
-                {(libType === "A1-share2.0" || libType === "A1-share3.0") && (
-                    <div className="flex flex-col gap-4">
-                        <div className="flex gap-4">
-                            <div className="flex-[2]">
-                                <label className="bisheng-label">服务器</label>
+                {(libType === "A1-Share2.0" || libType === "A1-Share3.0") && (
+                    <>
+                        <div className="flex flex-col gap-4">
+                            <div className="flex gap-4">
+                                <div className="flex-[2]">
+                                    <label className="bisheng-label">服务器</label>
+                                    <Input
+                                        value={shareFields.host}
+                                        onChange={e => setShareFields(f => ({ ...f, host: e.target.value }))}
+                                        placeholder="服务器地址"
+                                        className={`col-span-3 ${error.host && 'border-red-400'}`}
+                                    />
+                                </div>
+                                <div className="flex-[1]">
+                                    <label className="bisheng-label">端口</label>
+                                    <Input
+                                        value={shareFields.port}
+                                        onChange={e => setShareFields(f => ({ ...f, port: e.target.value }))}
+                                        placeholder="80"
+                                        className={`col-span-3 ${error.port && 'border-red-400'}`}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="bisheng-label">站点ID</label>
                                 <Input
-                                    value={shareFields.host}
-                                    onChange={e => setShareFields(f => ({ ...f, host: e.target.value }))}
-                                    placeholder="服务器地址"
-                                    className={`col-span-3 ${error.host && 'border-red-400'}`}
+                                    value={shareFields.rootNodeRef}
+                                    onChange={e => setShareFields(f => ({ ...f, rootNodeRef: e.target.value }))}
+                                    placeholder="站点ID"
+                                    className={`col-span-3 ${error.rootNodeRef && 'border-red-400'}`}
                                 />
                             </div>
-                            <div className="flex-[1]">
-                                <label className="bisheng-label">端口</label>
-                                <Input
-                                    value={shareFields.port}
-                                    onChange={e => setShareFields(f => ({ ...f, port: e.target.value }))}
-                                    placeholder="80"
-                                    className={`col-span-3 ${error.port && 'border-red-400'}`}
-                                />
+                            <div className="flex gap-4">
+                                <div className="flex-1">
+                                    <label className="bisheng-label">用户名</label>
+                                    <Input
+                                        value={shareFields.username}
+                                        onChange={e => setShareFields(f => ({ ...f, username: e.target.value }))}
+                                        placeholder="用户名"
+                                        className={`col-span-3 ${error.username && 'border-red-400'}`}
+                                    />
+                                </div>
+                                <div className="flex-1">
+                                    <label className="bisheng-label">密码</label>
+                                    <PasswordInput
+                                        value={shareFields.password}
+                                        onChange={e => setShareFields(f => ({ ...f, password: e.target.value }))}
+                                        placeholder="密码"
+                                        className={`col-span-3 ${error.password && 'border-red-400'}`}
+                                    />
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <label className="bisheng-label">站点ID</label>
-                            <Input
-                                value={shareFields.rootNodeRef}
-                                onChange={e => setShareFields(f => ({ ...f, rootNodeRef: e.target.value }))}
-                                placeholder="站点ID"
-                                className={`col-span-3 ${error.rootNodeRef && 'border-red-400'}`}
+                        <div className="flex items-center gap-2 mt-2">
+                            <Checkbox
+                                id="enableSync"
+                                checked={enableSync}
+                                onCheckedChange={setEnableSync}
                             />
+                            <label htmlFor="enableSync" className="bisheng-label cursor-pointer select-none flex items-center">
+                                定时同步
+                            <QuestionTooltip content={"外部知识库内容变更时需要同步，勾选后会定期自动进行。可在知识库同步操作中修改周期。"} />
+                            </label>
                         </div>
-                        <div className="flex gap-4">
-                            <div className="flex-1">
-                                <label className="bisheng-label">用户名</label>
-                                <Input
-                                    value={shareFields.username}
-                                    onChange={e => setShareFields(f => ({ ...f, username: e.target.value }))}
-                                    placeholder="用户名"
-                                    className={`col-span-3 ${error.username && 'border-red-400'}`}
-                                />
-                            </div>
-                            <div className="flex-1">
-                                <label className="bisheng-label">密码</label>
-                                <PasswordInput
-                                    value={shareFields.password}
-                                    onChange={e => setShareFields(f => ({ ...f, password: e.target.value }))}
-                                    placeholder="密码"
-                                    className={`col-span-3 ${error.password && 'border-red-400'}`}
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    </>
                 )}
                 <div className="">
                     <label htmlFor="name" className="bisheng-label">知识库描述</label>
@@ -331,9 +356,221 @@ function CreateModal({ datalist, open, setOpen, onLoadEnd }) {
     </Dialog>
 }
 
+function SyncShareDialog({ open, setOpen, lib, onSync }) {
+    const [form, setForm] = useState({
+        kb_id: lib?.id || "",
+        kb_name: lib?.name || "",
+        schedule: ""
+    });
+    const [error, setError] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [periodType, setPeriodType] = useState("day");
+    const [weekDays, setWeekDays] = useState(["1"]);
+    const [monthDays, setMonthDays] = useState(["1"]);
+    const [time, setTime] = useState("00:00");
+    const { toast } = useToast();
+
+    useEffect(() => {
+        setForm(f => ({
+            ...f,
+            kb_id: lib?.id || "",
+            kb_name: lib?.name || ""
+        }));
+    }, [lib]);
+
+    // 生成 cron 表达式
+    useEffect(() => {
+        let cron = "";
+        const [hh, mm] = time.split(":");
+        if (periodType === "day") {
+            cron = `${mm || "0"} ${hh || "0"} * * *`;
+        } else if (periodType === "week") {
+            cron = `${mm || "0"} ${hh || "0"} * * ${weekDays.join(",")}`;
+        } else if (periodType === "month") {
+            cron = `${mm || "0"} ${hh || "0"} ${monthDays.join(",")} * *`;
+        } else if (periodType === "never") {
+            cron = "";
+        }
+        setForm(f => ({ ...f, schedule: cron }));
+    }, [periodType, weekDays, monthDays, time]);
+
+    const handleChange = (key, val) => {
+        setForm(f => ({ ...f, [key]: val }));
+    };
+
+    const handleMultiSelect = (value, arr, setArr) => {
+        if (arr.includes(value)) {
+            setArr(arr.filter(v => v !== value));
+        } else {
+            setArr([...arr, value]);
+        }
+    };
+
+    const handleSync = async () => {
+        const err = {};
+        // 只校验 schedule，不再校验 kb_id
+        if (!form.schedule) err.schedule = "请选择定时规则";
+        setError(err);
+        if (Object.keys(err).length) {
+            toast({ variant: "error", description: Object.values(err).join("；") });
+            return;
+        }
+        setIsSubmitting(true);
+        // TODO: 调用后端API进行同步
+        await new Promise(r => setTimeout(r, 500)); // mock
+        setIsSubmitting(false);
+        setOpen(false);
+        onSync && onSync({
+            ...form,
+            id: Date.now(),
+            created_at: new Date().toISOString()
+        });
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-[625px]">
+                <DialogHeader>
+                    <DialogTitle>定时同步知识库</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col gap-4 py-2">
+                    <div>
+                        <label className="bisheng-label">
+                            知识库
+                        </label>
+                        <Select value={form.kb_id} disabled>
+                            <SelectTrigger>
+                                {form.kb_name}
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectItem value={form.kb_id}>{form.kb_name}</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div>
+                        <label className="bisheng-label">执行周期</label>
+                        <RadioGroup
+                            value={periodType}
+                            className="flex gap-4 mt-2"
+                            onValueChange={setPeriodType}
+                        >
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="never" id="period-never" />
+                                <Label htmlFor="period-never" className="ml-1">从不</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="day" id="period-day" />
+                                <Label htmlFor="period-day" className="ml-1">每天</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="week" id="period-week" />
+                                <Label htmlFor="period-week" className="ml-1">每周</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="month" id="period-month" />
+                                <Label htmlFor="period-month" className="ml-1">每月</Label>
+                            </div>
+                        </RadioGroup>
+                    </div>
+                    {periodType === "week" && (
+                        <div>
+                            <label className="bisheng-label">星期（多选）</label>
+                            <div className="flex flex-wrap gap-2 mt-1">
+                                 {[
+                                    { label: "一", value: "1" },
+                                    { label: "二", value: "2" },
+                                    { label: "三", value: "3" },
+                                    { label: "四", value: "4" },
+                                    { label: "五", value: "5" },
+                                    { label: "六", value: "6" },
+                                    { label: "日", value: "0" }
+                                ].map(opt => (
+                                    <Label key={opt.value} className={`flex w-20 items-center gap-1 px-2 py-1 border rounded cursor-pointer select-none${weekDays.includes(opt.value) ? " bg-indigo-100" : ""}`}>
+                                        <Checkbox
+                                            checked={weekDays.includes(opt.value)}
+                                            onCheckedChange={() => handleMultiSelect(opt.value, weekDays, setWeekDays)}
+                                        />
+                                        星期{opt.label}
+                                    </Label>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {periodType === "month" && (
+                        <div>
+                            <label className="bisheng-label">日期（多选）</label>
+                            <div className="flex flex-wrap gap-2 mt-1 max-h-24 overflow-y-auto">
+                                {Array.from({ length: 31 }, (_, i) => {
+                                    const val = String(i + 1);
+                                    return (
+                                        <Label key={val} className={`flex w-20 items-center gap-1 px-2 py-1 border rounded cursor-pointer select-none ${monthDays.includes(val) ? " bg-indigo-100" : ""}`}>
+                                            <Checkbox
+                                                checked={monthDays.includes(val)}
+                                                onCheckedChange={() => handleMultiSelect(val, monthDays, setMonthDays)}
+                                            />
+                                            <span className="flex-1 text-center">{val}号</span>
+                                        </Label>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+                    {/* 仅当不是“从不”时显示执行时间和cron */}
+                    {periodType !== "never" && (
+                        <>
+                            <div>
+                                <label className="bisheng-label">执行时间</label>
+                                <div className="relative flex items-center">
+                                    <Input
+                                        type="time"
+                                        value={time}
+                                        onChange={e => setTime(e.target.value)}
+                                        className="mt-2"
+                                        style={{ fontVariantNumeric: "tabular-nums" }}
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="bisheng-label">Cron 规则表达式</label>
+                                <Input value={form.schedule} readOnly className={`mt-2 col-span-3 ${error.schedule ? "border-red-400" : ""}`} />
+                            </div>
+                        </>
+                    )}
+                </div>
+                <Button
+                    variant="outline"
+                    className="px-11 flex absolute left-5 bottom-5"
+                    onClick={() => console.log('立即同步')}
+                >
+                    立即同步
+                </Button>
+                <DialogFooter className="pl-[160px]">
+                    {/* 右侧按钮组，留出左侧空间 */}
+                    <DialogClose>
+                        <Button variant="outline" className="px-11">取消</Button>
+                    </DialogClose>
+                    <Button
+                        type="submit"
+                        className="px-11 flex"
+                        onClick={handleSync}
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting && <LoadingIcon className="mr-1" />}
+                        确认
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 const doing = {} // 记录copy中的知识库
 export default function KnowledgeFile() {
     const [open, setOpen] = useState(false);
+    const [syncDialogOpen, setSyncDialogOpen] = useState(false)
+    const [syncLib, setSyncLib] = useState(null)
     const { user } = useContext(userContext);
     const [modelNameMap, setModelNameMap] = useState({})
     const { message } = useToast()
@@ -416,8 +653,6 @@ export default function KnowledgeFile() {
             <div className="h-[calc(100vh-128px)] overflow-y-auto pb-20">
                 <div className="flex justify-end gap-4 items-center absolute right-0 top-[-44px]">
                     <SearchInput placeholder="知识库或文件名称" onChange={(e) => search(e.target.value)} />
-                    {/* <Link to='/filelib/sync'><Button variant="outline" className="px-8">同步</Button></Link>
-                    <Link to='/filelib/timer'><Button variant="outline" className="px-8">定时</Button></Link> */}
                     <Button className="px-8 text-[#FFFFFF]" onClick={() => setOpen(true)}>{t('create')}</Button>
                 </div>
                 <Table>
@@ -425,8 +660,8 @@ export default function KnowledgeFile() {
                         <TableRow>
                             <TableHead>{t('lib.knowledgeBaseId')}</TableHead>
                             <TableHead className="w-[180px]">{t('lib.libraryName')}</TableHead>
-                            <TableHead>{t('lib.model')}</TableHead>
                             <TableHead>类型</TableHead>
+                            <TableHead>{t('lib.model')}</TableHead>
                             <TableHead>{t('createTime')}</TableHead>
                             <TableHead>{t('updateTime')}</TableHead>
                             <TableHead>{t('lib.createUser')}</TableHead>
@@ -441,14 +676,14 @@ export default function KnowledgeFile() {
                                 <TableCell className="font-medium max-w-[180px]">
                                     <div className=" truncate-multiline">{el.name}</div>
                                 </TableCell>
-                                <TableCell>{modelNameMap[el.model] || '--'}</TableCell>
                                 <TableCell>
                                     {
-                                        el.storage_type === 1 ? "A1-share2.0"
-                                        : el.storage_type === 2 ? "A1-share3.0"
+                                        el.storage_type === 1 ? "A1-Share2.0"
+                                        : el.storage_type === 2 ? "A1-Share3.0"
                                         : "default"
                                     }
                                 </TableCell>
+                                <TableCell>{modelNameMap[el.model] || '--'}</TableCell>
                                 <TableCell>{el.create_time.replace('T', ' ')}</TableCell>
                                 <TableCell>{el.update_time.replace('T', ' ')}</TableCell>
                                 <TableCell className="max-w-[300px] break-all">
@@ -459,9 +694,21 @@ export default function KnowledgeFile() {
                                     window.libname = [el.name, el.description];
                                 }}>
                                     <Link to={`/filelib/${el.id}`} className="no-underline hover:underline text-primary" onClick={handleCachePage}>{t('lib.details')}</Link>
-                                    {(el.copiable || user.role === 'admin') && (el.state === 1
-                                        ? <Button variant="link" className="px-0 pl-2" onClick={() => handleCopy(el)}>{t('lib.copy')}</Button>
-                                        : <Button variant="link" className="px-0 pl-2" disabled>{t('lib.copying')}</Button>)}
+                                    {/* 修改：share类型显示同步按钮，非share类型显示复制按钮 */}
+                                    {(el.storage_type === 1 || el.storage_type === 2) ? (
+                                        <Button
+                                            variant="link"
+                                            className="px-0 pl-2"
+                                            onClick={() => {
+                                                setSyncLib(el)
+                                                setSyncDialogOpen(true)
+                                            }}
+                                        >同步</Button>
+                                    ) : (
+                                        (el.copiable || user.role === 'admin') && (el.state === 1
+                                            ? <Button variant="link" className="px-0 pl-2" onClick={() => handleCopy(el)}>{t('lib.copy')}</Button>
+                                            : <Button variant="link" className="px-0 pl-2" disabled>{t('lib.copying')}</Button>)
+                                    )}
                                     {el.copiable ?
                                         <Button variant="link" onClick={() => handleDelete(el.id)} className="text-red-500 px-0 pl-2">{t('delete')}</Button> :
                                         <Button variant="link" className=" text-gray-400 px-0 pl-2">{t('delete')}</Button>
@@ -484,6 +731,7 @@ export default function KnowledgeFile() {
                 </div>
             </div>
             <CreateModal datalist={datalist} open={open} setOpen={setOpen} onLoadEnd={setModelNameMap}></CreateModal>
+            <SyncShareDialog open={syncDialogOpen} setOpen={setSyncDialogOpen} lib={syncLib} onSync={() => {}} />
         </div>
     );
 }
