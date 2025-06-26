@@ -47,6 +47,7 @@ build-base:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       <<: *base_changes
+    - if: $CI_BASE_TAG
   script:
     - cd ./src/backend
     - docker build -t 10.191.6.39:8085/ycopilot-v2/ycopilot-core:base.v2 -f base.Dockerfile . --build-arg ALL_PROXY=$PROXY

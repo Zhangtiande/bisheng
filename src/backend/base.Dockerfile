@@ -6,14 +6,14 @@ ENV PANDOC_ARCH=$PANDOC_ARCH
 WORKDIR /app
 
 RUN echo \
-    deb https://mirrors.aliyun.com/debian/ bookworm main non-free non-free-firmware contrib \
-    deb-src https://mirrors.aliyun.com/debian/ bookworm main non-free non-free-firmware contrib \
-    deb https://mirrors.aliyun.com/debian-security/ bookworm-security main \
-    deb-src https://mirrors.aliyun.com/debian-security/ bookworm-security main \
-    deb https://mirrors.aliyun.com/debian/ bookworm-updates main non-free non-free-firmware contrib \
-    deb-src https://mirrors.aliyun.com/debian/ bookworm-updates main non-free non-free-firmware contrib \
-    deb https://mirrors.aliyun.com/debian/ bookworm-backports main non-free non-free-firmware contrib \
-    deb-src https://mirrors.aliyun.com/debian/ bookworm-backports main non-free non-free-firmware contrib \
+    deb https://mirrors.ustc.edu.cn/debian/ bookworm main non-free non-free-firmware contrib \
+    deb-src https://mirrors.ustc.edu.cn/debian/ bookworm main non-free non-free-firmware contrib \
+    deb https://mirrors.ustc.edu.cn/debian-security/ bookworm-security main \
+    deb-src https://mirrors.ustc.edu.cn/debian-security/ bookworm-security main \
+    deb https://mirrors.ustc.edu.cn/debian/ bookworm-updates main non-free non-free-firmware contrib \
+    deb-src https://mirrors.ustc.edu.cn/debian/ bookworm-updates main non-free non-free-firmware contrib \
+    deb https://mirrors.ustc.edu.cn/debian/ bookworm-backports main non-free non-free-firmware contrib \
+    deb-src https://mirrors.ustc.edu.cn/debian/ bookworm-backports main non-free non-free-firmware contrib \
     > /etc/apt/sources.list
 
 
@@ -42,7 +42,7 @@ RUN pip install uv -i https://mirrors.ustc.edu.cn/pypi/simple
 # # Copy the pyproject.toml and poetry.lock files
 # COPY poetry.lock pyproject.toml ./
 # Copy the rest of the application codes
-COPY ./pyproject.toml uv.lock bisheng_langchain-1.2.1-py3-none-any.whl ./
+COPY ./pyproject.toml uv.lock bisheng_langchain-1.3.1-py3-none-any.whl ./
 RUN uv sync --frozen
 ENV PATH="/app/.venv/bin:$PATH"
 
