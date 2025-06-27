@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 import axios from '@/controllers/request';
+import lodash from "lodash";
 
 /**
  * OAuth2 回调处理组件
@@ -21,28 +22,33 @@ const OAuth2Callback = () => {
             setErrorMessage(t('login.noCodeFound') || '未在URL中找到授权码');
             return;
         }
-
-        // 调用后端接口换取token
-        axios.post('/api/oauth2/token', { code })
-            .then((response: any) => {
-                if (response && response.access_token) {
-                    document.cookie = `access_token_cookie=${response.access_token}; path=/;  SameSite=Lax`;
-                    document.cookie = `refresh_token_cookie=${response.refresh_token}; path=/;  SameSite=Lax`;
-                    localStorage.setItem('isLogin', '1');
-                    setStatus('success');
-                    // 跳转到首页或工作台
-                    const path = location.href.indexOf('from=workspace') === -1 ? '' : '/workspace/';
-                    const redirectUrl = path ? location.origin + path : '/';
-                    window.location.href = redirectUrl;
-                } else {
+        // 使用lodash防抖函数防止重复调用
+        const debouncedVerifyTicket = lodash.debounce((ticketParam: string) => {
+            axios.post('/api/oauth2/token', { code })
+                .then((response: any) => {
+                    if (response && response.access_token) {
+                        document.cookie = `access_token_cookie=${response.access_token}; path=/;  SameSite=Lax`;
+                        document.cookie = `refresh_token_cookie=${response.refresh_token}; path=/;  SameSite=Lax`;
+                        localStorage.setItem('isLogin', '1');
+                        setStatus('success');
+                        // 跳转到首页或工作台
+                        const path = location.href.indexOf('from=workspace') === -1 ? '' : '/workspace/';
+                        const redirectUrl = path ? location.origin + path : '/';
+                        window.location.href = redirectUrl;
+                    } else {
+                        setStatus('error');
+                        setErrorMessage(t('login.oauth2TokenError') || '未获取到token');
+                    }
+                })
+                .catch((error) => {
                     setStatus('error');
-                    setErrorMessage(t('login.oauth2TokenError') || '未获取到token');
-                }
-            })
-            .catch((error) => {
-                setStatus('error');
-                setErrorMessage(typeof error === 'string' ? error : (error.message || t('login.oauth2TokenError')));
-            });
+                    setErrorMessage(typeof error === 'string' ? error : (error.message || t('login.oauth2TokenError')));
+                });
+        }, 300);
+        debouncedVerifyTicket(code);
+        return () => {
+            debouncedVerifyTicket.cancel();
+        };
     }, [t]);
 
     return (
