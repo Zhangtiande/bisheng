@@ -109,6 +109,7 @@ class RagNode(BaseNode):
 
             result = retriever._call({'query': question}, run_manager=llm_callback)
 
+            self.graph_state.set_variable_by_str("global.source_documents", result['source_documents'])
             if self._output_user:
                 self.graph_state.save_context(content=result['result'], msg_sender='AI')
                 if llm_callback.output_len == 0:

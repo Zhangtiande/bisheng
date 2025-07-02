@@ -12,6 +12,7 @@ from bisheng.workflow.nodes.rag.rag import RagNode
 from bisheng.workflow.nodes.report.report import ReportNode
 from bisheng.workflow.nodes.start.start import StartNode
 from bisheng.workflow.nodes.tool.tool import ToolNode
+from bisheng.workflow.nodes.inspiration_explorer.inspiration_explorer import InspirationExplorerNode
 
 NODE_CLASS_MAP = {
     NodeType.START.value: StartNode,
@@ -26,7 +27,8 @@ NODE_CLASS_MAP = {
     NodeType.AGENT.value: AgentNode,
     NodeType.CODE.value: CodeNode,
     NodeType.LLM.value: LLMNode,
-    NodeType.QUESTION_PREDICT.value: QuestionPredictNode
+    NodeType.QUESTION_PREDICT.value: QuestionPredictNode,
+    NodeType.INSPIRATION_EXPLORER.value: InspirationExplorerNode,
 }
 
 

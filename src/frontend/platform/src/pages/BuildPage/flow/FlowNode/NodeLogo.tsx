@@ -1,5 +1,5 @@
 import { cname } from "@/components/bs-ui/utils";
-import { BookOpenTextIcon, Bot, Brain, Code2, FileDown, FileSearch, FlagTriangleRight, Hammer, Home, Keyboard, MessagesSquareIcon, Split, HelpCircle } from "lucide-react";
+import { BookOpenTextIcon, Bot, Brain, Code2, FileDown, FileSearch, FlagTriangleRight, Hammer, Home, Keyboard, MessagesSquareIcon, Split, HelpCircle, Lightbulb } from "lucide-react";
 export const Icons = {
     'start': Home,
     'input': Keyboard,
@@ -12,7 +12,8 @@ export const Icons = {
     'end': FlagTriangleRight,
     'condition': Split,
     'report': FileDown,
-    'question_predict': HelpCircle
+    'question_predict': HelpCircle,
+    'inspiration_explorer': Lightbulb
 }
 export const Colors = {
     'start': 'bg-[#FFD89A]',
@@ -26,7 +27,8 @@ export const Colors = {
     'end': 'bg-red-400',
     'condition': 'bg-[#EDC9E9]',
     'report': 'bg-[#9CE4F4]',
-    'question_predict': 'bg-[#F0E68C]'
+    'question_predict': 'bg-[#F0E68C]',
+    'inspiration_explorer': 'bg-[#FFE4B5]'
 }
 
 export default function NodeLogo({ type, className = '', colorStr = '' }) {
