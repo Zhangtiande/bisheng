@@ -21,6 +21,7 @@ class NodeType(Enum):
     REPORT = "report"
     TOOL = "tool"
     QUESTION_PREDICT = "question_predict"
+    INSPIRATION_EXPLORER = "inspiration_explorer"
 
     NOTE = 'note'  # 备注节点 知识用来显示注释，非实际执行节点
 

@@ -907,6 +907,48 @@ const workflowTemplate = [
         ]
     },
     {
+        "id": "inspiration_explorer_xxx",
+        "name": "灵感探索",
+        "description": "根据用户输入和上下文生成结构化的主题探索内容。",
+        "type": "inspiration_explorer",
+        "v": "1",
+        "group_params": [
+            {
+                "name": "模型设置",
+                "params": [
+                    {
+                        "key": "model_id",
+                        "label": "模型",
+                        "type": "bisheng_model",
+                        "value": "",
+                        "required": true,
+                        "placeholder": "请在模型管理中配置 LLM 模型"
+                    },
+                    {
+                        "key": "temperature",
+                        "label": "温度",
+                        "type": "slide",
+                        "scope": [0, 2],
+                        "step": 0.1,
+                        "value": 0.8
+                    }
+                ]
+            },
+            {
+                "name": "输出",
+                "params": [
+                    {
+                        "key": "inspiration_result",
+                        "label": "灵感探索结果",
+                        "type": "var",
+                        "global": "key",
+                        "value": ""
+                    }
+                ]
+            }
+        ]
+    },
+    {
         "id": "end_xxx",
         "name": "结束",
         "description": "工作流运行到此结束。",
@@ -1694,6 +1736,48 @@ const workflowTemplateEN = [
                     {
                         "key": "analysis",
                         "label": "Conversation Trend Analysis",
+                        "type": "var",
+                        "global": "key",
+                        "value": ""
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inspiration_explorer_xxx",
+        "name": "Inspiration Explorer",
+        "description": "Generate structured topic exploration content based on user input and context.",
+        "type": "inspiration_explorer",
+        "v": "1",
+        "group_params": [
+            {
+                "name": "Model Settings",
+                "params": [
+                    {
+                        "key": "model_id",
+                        "label": "Model",
+                        "type": "bisheng_model",
+                        "value": "",
+                        "required": true,
+                        "placeholder": "Please configure LLM model in model management"
+                    },
+                    {
+                        "key": "temperature",
+                        "label": "Temperature",
+                        "type": "slide",
+                        "scope": [0, 2],
+                        "step": 0.1,
+                        "value": 0.8
+                    }
+                ]
+            },
+            {
+                "name": "Output",
+                "params": [
+                    {
+                        "key": "inspiration_result",
+                        "label": "Inspiration Result",
                         "type": "var",
                         "global": "key",
                         "value": ""
