@@ -354,14 +354,12 @@ class KnowledgeService(KnowledgeUtils):
             return
         page_size = 1000
         page_num = math.ceil(count / page_size)
-        knowledge = KnowledgeDao.query_by_id(knowledge_id)
-        object_storage = decide_object_storage(knowledge)
         for i in range(page_num):
-            file_list = KnowledgeFileDao.get_file_simple_by_knowledge_id(
-                knowledge_id, i + 1, page_size
-            )
+            file_list = KnowledgeFileDao.get_file_simple_by_knowledge_id(knowledge_id, i + 1, page_size)
             for file in file_list:
-                object_storage.delete_file(file)
+                minio_client.delete_minio(str(file[0]))
+                if file[1]:
+                    minio_client.delete_minio(file[1])
 
     @classmethod
     def get_upload_file_original_name(cls, file_name: str) -> str:
@@ -720,12 +718,10 @@ class KnowledgeService(KnowledgeUtils):
                                 user_id=login_user.user_id,
                                 extra_meta=extra_meta)
         db_file = KnowledgeFileDao.add_file(db_file)
-        # 原始文件保存, 除minio外，其他类型各自托管文件，不保存到minio
-        if knowledge.storage_type == StorageTypeEnum.MINIO.value:
-            file_type = db_file.file_name.rsplit('.', 1)[-1]
-            db_file.object_name = f'original/{db_file.id}.{file_type}'
-            res = minio_client.upload_minio(db_file.object_name, filepath)
-            logger.info('upload_original_file path={} res={}', db_file.object_name, res)
+        file_type = db_file.file_name.rsplit('.', 1)[-1]
+        db_file.object_name = f"original/{db_file.id}.{file_type}"
+        res = minio_client.upload_minio(db_file.object_name, filepath)
+        logger.info("upload_original_file path={} res={}", db_file.object_name, res)
         KnowledgeFileDao.update(db_file)
         return db_file
 
@@ -1082,16 +1078,11 @@ class KnowledgeService(KnowledgeUtils):
             download_url = minio_client.get_share_link(str(file_id))
         else:
             # 130版本以后的文件解析逻辑，只有源文件和预览文件，不再都转pdf了
-            if file.file_name.endswith(('.doc', '.ppt', '.pptx')):
+            if file.file_name.endswith((".doc", ".ppt", ".pptx")):
                 preview_object_name = KnowledgeUtils.get_knowledge_preview_file_object_name(file.id, file.file_name)
                 download_url = cls.get_file_share_url_with_empty(preview_object_name)
             else:
-                knowledge = KnowledgeDao.query_by_id(file.knowledge_id)
-                if knowledge.storage_type == StorageTypeEnum.MINIO.value:
-                    download_url = cls.get_file_share_url_with_empty(file.object_name)
-                else:
-                    object_storage = decide_object_storage(knowledge)
-                    download_url = object_storage.get_share_link(file)
+                download_url = cls.get_file_share_url_with_empty(file.object_name)
         return download_url
 
     @classmethod

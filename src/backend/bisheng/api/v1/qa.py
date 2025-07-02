@@ -41,65 +41,42 @@ async def get_answer_keyword(message_id: int):
 
 
 @router.post('/chunk', status_code=200)
-def get_original_file(message_id: Annotated[int, Body(embed=True)],
-                      keys: Annotated[str, Body(embed=True)]):
+def get_original_file(message_id: Annotated[int, Body(embed=True)], keys: Annotated[str, Body(embed=True)]):
     # 获取命中的key
     with session_getter() as session:
-        chunks = session.exec(
-            select(RecallChunk).where(RecallChunk.message_id == message_id)).all()
+        chunks = session.exec(select(RecallChunk).where(RecallChunk.message_id == message_id)).all()
 
     if not chunks:
-        return resp_200(message='没有找到chunks')
+        return resp_200(message="没有找到chunks")
 
     # chunk 的所有file
     file_ids = {chunk.file_id for chunk in chunks}
     db_knowledge_files = KnowledgeFileDao.get_file_by_ids(list(file_ids))
     id2file = {file.id: file for file in db_knowledge_files}
     # keywords
-    keywords = keys.split(';') if keys else []
+    keywords = keys.split(";") if keys else []
     result = []
-
-    
-    # 按知识库ID分组文件
-    knowledge_keys = []
-    for file in db_knowledge_files:
-        knowledge_id = file.knowledge_id
-        if knowledge_id not in knowledge_keys:
-            knowledge_keys.append(knowledge_id)
-    
-    # 为每个知识库创建对应的存储客户端
-    storage_clients = {}
-    for knowledge_id in knowledge_keys:
-        with session_getter() as session:
-            knowledge = session.exec(
-                select(Knowledge).where(Knowledge.id == knowledge_id)).first()
-        if knowledge:
-            storage_clients[knowledge_id] = decide_object_storage(knowledge)
     minio_client = MinioClient()
     for index, chunk in enumerate(chunks):
         file = id2file.get(chunk.file_id)
 
-        chunk_res = json.loads(json.loads(chunk.meta_data).get('bbox'))
-        file_access = json.loads(chunk.meta_data).get('right', True)
-        chunk_res['right'] = file_access
+        chunk_res = json.loads(json.loads(chunk.meta_data).get("bbox"))
+        file_access = json.loads(chunk.meta_data).get("right", True)
+        chunk_res["right"] = file_access
         if file_access and file:
-            storage_client = storage_clients.get(file.knowledge_id)
-            if storage_client:
-                chunk_res['original_url'] = storage_client.get_share_link(file)
-            else:
-                chunk_res['original_url'] = minio_client.get_share_link(
-                    file.object_name if file.object_name else str(file.id))
-            chunk_res['source_url'] = KnowledgeService.get_file_share_url(file.id)
-            chunk_res['source'] = file.file_name
+            chunk_res["source_url"] = KnowledgeService.get_file_share_url(file.id)
+            chunk_res["original_url"] = minio_client.get_share_link(
+                file.object_name if file.object_name else str(file.id)
+            )
+            chunk_res["source"] = file.file_name
         else:
-            chunk_res['source_url'] = ''
-            chunk_res['original_url'] = ''
-            chunk_res['source'] = ''
+            chunk_res["source_url"] = ""
+            chunk_res["original_url"] = ""
+            chunk_res["source"] = ""
 
-        chunk_res['score'] = round(match_score(chunk.chunk, keywords),
-                                   2) if len(keywords) > 0 else 0
-        chunk_res['file_id'] = chunk.file_id
-        chunk_res['parse_type'] = file.parse_type if file else ''
+        chunk_res["score"] = round(match_score(chunk.chunk, keywords), 2) if len(keywords) > 0 else 0
+        chunk_res["file_id"] = chunk.file_id
+        chunk_res["parse_type"] = file.parse_type if file else ""
 
         result.append(chunk_res)
 

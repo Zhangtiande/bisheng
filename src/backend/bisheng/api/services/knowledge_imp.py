@@ -24,8 +24,6 @@ from sqlalchemy import func, or_
 from sqlmodel import select
 
 from bisheng.api.errcode.knowledge import KnowledgeSimilarError
-from bisheng.api.services.OSS.base_oss import BaseObjectStorage
-from bisheng.api.services.OSS.storage_factory import decide_object_storage
 from bisheng.api.services.etl4lm_loader import Etl4lmLoader
 from bisheng.api.services.handler.impl.xls_split_handle import XlsSplitHandle
 from bisheng.api.services.handler.impl.xlsx_split_handle import XlsxSplitHandle
@@ -376,10 +374,7 @@ def addEmbedding(
         filter_page_header_footer: int = 0,
 ):
     """将文件加入到向量和es库内"""
-
-    knowledge = KnowledgeDao.query_by_id(knowledge_id)
-    object_storage = decide_object_storage(knowledge)
-
+    
     logger.info('start process files')
     minio_client = MinioClient()
     embeddings = decide_embeddings(model)
@@ -419,7 +414,7 @@ def addEmbedding(
                 enable_formula=enable_formula,
                 force_ocr=force_ocr,
                 filter_page_header_footer=filter_page_header_footer,
-                object_storage=object_storage)
+)
  
             db_file.status = KnowledgeFileStatus.SUCCESS.value
         except Exception as e:
@@ -459,18 +454,12 @@ def add_file_embedding(
         enable_formula: int = 1,
         force_ocr: int = 0,
         filter_page_header_footer: int = 0,
-        object_storage: BaseObjectStorage = None):
+):
                        
     # download original file
     logger.info(f'start download original file={db_file.id} file_name={db_file.file_name}')
-    if object_storage.storage_type != StorageTypeEnum.MINIO.value:
-        file_url = object_storage.get_share_link(db_file)
-        filepath, _ = file_download(file_url, db_file.file_name)
-    else:
-        file_url = minio_client.get_share_link(db_file.object_name)
-        filepath, _ = file_download(file_url)
-
-   
+    file_url = minio_client.get_share_link(db_file.object_name)
+    filepath, _ = file_download(file_url)
 
     if not vector_client:
         raise ValueError("vector db not found, please check your milvus config")
