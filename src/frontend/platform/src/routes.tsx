@@ -40,6 +40,7 @@ import ResoucePage from "./pages/resoucePage";
 import { AppNumType } from "./types/app";
 import OAuth2Callback from "./pages/LoginPage/OAuth2Callback";
 import OAuth2LogoutCallback from './pages/LoginPage/OAuth2LogoutCallback';
+import { ApiKeyPage } from "./pages/SystemPage/components/ApiKey";
 
 // react 与 react router dom版本不匹配
 // const FileLibPage = lazy(() => import(/* webpackChunkName: "FileLibPage" */ "./pages/FileLibPage"));
@@ -132,6 +133,7 @@ const privateRouter = [
   { path: "/report/:id/", element: <Report /> },
   { path: "/diff/:id/:vid/:cid", element: <ErrorHoc Comp={DiffFlowPage} /> },
   { path: "/reset", element: <ResetPwdPage /> },
+  { path: "/apikey", element: <ApiKeyPage /> },
   { path: "/403", element: <Page403 /> },
   { path: "/authentication/exit", element: <OAuth2LogoutCallback /> },
   { path: "*", element: <Navigate to="/" replace /> }

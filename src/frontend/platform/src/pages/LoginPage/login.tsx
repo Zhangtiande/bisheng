@@ -207,7 +207,7 @@ export const LoginPage = () => {
                                     disabled={isLoading} onClick={handleRegister} >{t('login.registerButton')}</Button>
                             </>
                     }
-                    {appConfig.isPro && <LoginBridge onHasLdap={setIsLDAP} />}
+                    {<LoginBridge onHasLdap={setIsLDAP} />}
                 </div>
             </div>
         </div>
