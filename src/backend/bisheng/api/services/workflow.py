@@ -206,8 +206,11 @@ class WorkFlowService(BaseService):
                     message=chat_response.message.get('guide_word')
                 )
             case WorkflowEventType.GuideQuestion.value:
+                result = chat_response.message.get('guide_question')
+                if not result:
+                    result = chat_response.message.get('inspiration_result')
                 workflow_event.output_schema = WorkflowOutputSchema(
-                    message=chat_response.message.get('guide_question')
+                    message=result
                 )
             case WorkflowEventType.OutputMsg.value:
                 return cls.convert_output_event(chat_response, workflow_event)

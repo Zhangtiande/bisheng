@@ -370,7 +370,10 @@ class AgentNode(BaseNode):
             'text': user
         }])
         human_message = self.contact_file_into_prompt(human_message, self._image_prompt)
-        chat_history.append(human_message)
+        if chat_history[-1].content[1:] not in f'\n{user}':
+            chat_history.append(human_message)
+        else:
+            chat_history[-1].content = user
         logger.debug(f'agent invoke chat_history: {chat_history}')
 
         if self._agent_executor_type == 'ReAct':

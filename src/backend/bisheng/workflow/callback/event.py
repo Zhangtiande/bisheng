@@ -31,6 +31,7 @@ class GuideQuestionData(BaseModel):
     unique_id: Optional[str] = Field(..., description='Unique execution id')
     node_id: str = Field(..., description='Node unique id')
     guide_question: List[str] = Field(..., description='Guide question')
+    inspiration_result: Optional[dict] = Field(None, description='Inspiration result')
 
 
 class OutputMsgData(BaseModel):

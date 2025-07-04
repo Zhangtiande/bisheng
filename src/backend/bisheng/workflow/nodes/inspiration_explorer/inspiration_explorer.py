@@ -1,12 +1,11 @@
-from typing import Any, Dict, List
+from typing import Any, Dict
 import json
 from loguru import logger
 
 from bisheng.api.services.llm import LLMService
-from bisheng.workflow.callback.event import StreamMsgOverData
+from bisheng.workflow.callback.event import GuideQuestionData
 from bisheng.workflow.callback.llm_callback import LLMNodeCallbackHandler
 from bisheng.workflow.nodes.base import BaseNode
-from bisheng.workflow.nodes.prompt_template import PromptTemplateParser
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.runnables import RunnableConfig
 
@@ -290,6 +289,13 @@ class InspirationExplorerNode(BaseNode):
 
         # 解析结果
         parsed_result = self._parse_llm_output(result.content)
+
+        self.callback_manager.on_guide_question(GuideQuestionData(
+            unique_id=unique_id,
+            node_id=self.id,
+            guide_question=[],
+            inspiration_result=parsed_result,
+        ))
 
         # 准备返回结果
         output_data = {
