@@ -12,7 +12,6 @@ export const Icons = {
     'end': FlagTriangleRight,
     'condition': Split,
     'report': FileDown,
-    'question_predict': HelpCircle,
     'inspiration_explorer': Lightbulb
 }
 export const Colors = {
@@ -27,7 +26,6 @@ export const Colors = {
     'end': 'bg-red-400',
     'condition': 'bg-[#EDC9E9]',
     'report': 'bg-[#9CE4F4]',
-    'question_predict': 'bg-[#F0E68C]',
     'inspiration_explorer': 'bg-[#FFE4B5]'
 }
 

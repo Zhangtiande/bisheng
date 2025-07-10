@@ -280,7 +280,7 @@ export function importFlow() {
                         delete flow.source
 
                         flow.nodes.forEach(node => {
-                            if (['rag', 'llm', 'agent', 'qa_retriever', 'question_predict', 'inspiration_explorer'].includes(node.data.type)) {
+                            if (['rag', 'llm', 'agent', 'qa_retriever', 'inspiration_explorer'].includes(node.data.type)) {
                                 node.data.group_params.forEach(group =>
                                     group.params.forEach(param => {
                                         if (param.type === 'bisheng_model') {
