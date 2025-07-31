@@ -79,6 +79,7 @@ export default function EditRole({ id, name, groupId, onChange, onBeforeChange }
         useAssistant: [],
         useFlows: [],
         manageLibs: [],
+        manageFlows: [],
         useTools: [],
         useMenu: [MenuType.BUILD, MenuType.KNOWLEDGE]
     })
@@ -86,20 +87,21 @@ export default function EditRole({ id, name, groupId, onChange, onBeforeChange }
         if (id !== -1) {
             // 获取详情，初始化选中数据
             getRolePermissionsApi(id).then(res => {
-                const useSkills = [], useLibs = [], manageLibs = [], useAssistant = [], useFlows = [], useTools = [],
+                const useSkills = [], useLibs = [], manageLibs = [], manageFlows = [], useAssistant = [], useFlows = [], useTools = [],
                     useMenu = []
                 res.data.forEach(item => {
                     switch (item.type) {
                         case 1: useLibs.push(Number(item.third_id)); break;
                         case 2: useSkills.push(item.third_id); break;
                         case 9: useFlows.push(item.third_id); break;
+                        case 10: manageFlows.push(item.third_id); break;
                         case 3: manageLibs.push(Number(item.third_id)); break;
                         case 7: useTools.push(Number(item.third_id)); break;
                         case 5: useAssistant.push(item.third_id); break;
                         case 99: useMenu.push(item.third_id); break;
                     }
                 })
-                setForm({ name, useSkills, useLibs, useAssistant, useFlows, manageLibs, useTools, useMenu })
+                setForm({ name, useSkills, useLibs, useAssistant, useFlows, manageLibs, manageFlows, useTools, useMenu })
             })
         }
     }, [id])
@@ -115,6 +117,16 @@ export default function EditRole({ id, name, groupId, onChange, onBeforeChange }
     const switchLibManage = (id, checked) => {
         switchDataChange(id, 'manageLibs', checked)
         if (checked) switchDataChange(id, 'useLibs', checked)
+    }
+    // 工作流管理权限switch
+    const switchFlowManage = (id, checked) => {
+        switchDataChange(id, 'manageFlows', checked)
+        if (checked) switchDataChange(id, 'useFlows', checked)
+    }
+    // 工作流使用权限switch
+    const switchUseFlow = (id, checked) => {
+        if (!checked && form.manageFlows.includes(id)) return
+        switchDataChange(id, 'useFlows', checked)
     }
     // 知识库使用权限switch
     const switchUseLib = (id, checked) => {
@@ -157,6 +169,7 @@ export default function EditRole({ id, name, groupId, onChange, onBeforeChange }
             updateRolePermissionsApi({ role_id: roleId, access_id: form.useLibs, type: 1 }),
             updateRolePermissionsApi({ role_id: roleId, access_id: form.useFlows, type: 9 }),
             updateRolePermissionsApi({ role_id: roleId, access_id: form.manageLibs, type: 3 }),
+            updateRolePermissionsApi({ role_id: roleId, access_id: form.manageFlows, type: 10 }),
             updateRolePermissionsApi({ role_id: roleId, access_id: form.useTools, type: 7 }),
             updateRolePermissionsApi({ role_id: roleId, access_id: form.useAssistant, type: 5 }),
             updateRolePermissionsApi({ role_id: roleId, access_id: form.useMenu, type: 99 }),
@@ -280,7 +293,7 @@ export default function EditRole({ id, name, groupId, onChange, onBeforeChange }
         {/* 工作流 */}
         <div className="">
             <SearchPanne
-                title={'工作流授权'}
+                title={t('system.flowAuthorization')}
                 groupId={groupId}
                 role_id={roleId}
                 type={'flow'}>
@@ -288,9 +301,10 @@ export default function EditRole({ id, name, groupId, onChange, onBeforeChange }
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>工作流名称</TableHead>
+                                <TableHead>{t('build.workFlowName')}</TableHead>
                                 <TableHead>{t('system.creator')}</TableHead>
-                                <TableHead className="text-right w-[75px]">{t('system.usePermission')}</TableHead>
+                                <TableHead>{t('system.usePermission')}</TableHead>
+                                <TableHead className="text-right w-[75px]">{t('system.managePermission')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -298,8 +312,11 @@ export default function EditRole({ id, name, groupId, onChange, onBeforeChange }
                                 <TableRow key={el.id}>
                                     <TableCell className="font-medium">{el.name}</TableCell>
                                     <TableCell>{el.user_name}</TableCell>
+                                    <TableCell className="text-left">
+                                        <Switch checked={form.useFlows.includes(el.id)} onCheckedChange={(bln) => switchUseFlow(el.id, bln)} />
+                                    </TableCell>
                                     <TableCell className="text-center">
-                                        <Switch checked={form.useFlows.includes(el.id)} onCheckedChange={(bln) => switchDataChange(el.id, 'useFlows', bln)} />
+                                        <Switch checked={form.manageFlows.includes(el.id)} onCheckedChange={(bln) => switchFlowManage(el.id, bln)} />
                                     </TableCell>
                                 </TableRow>
                             ))}

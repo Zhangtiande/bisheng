@@ -47,6 +47,7 @@ BISHENG is an open LLM application devops platform, focusing on enterprise scena
 <p align="center"><img src="https://dataelem.com/bs/chat.png" alt="sence1"></p>
 
 3. <b>Enterprise-grade</b> features are the fundamental guarantee for application implementation: security review, RBAC, user group management, traffic control by group, SSO/LDAP, vulnerability scanning and patching, high availability deployment solutions, monitoring, statistics, and more.
+   - The RBAC system now includes a `WORK_FLOW_WRITE` (10) permission for workflow management.
 <p align="center"><img src="https://dataelem.com/bs/pro.png" alt="sence2"></p>
 
 4. <b>High-Precision Document Parsing</b>: Our high-precision document parsing model is trained on a vast amount of high-quality data accumulated over past 5 years. It includes high-precision printed text, handwritten text, and rare character recognition models, table recognition models, layout analysis models, and seal models., table recognition models, layout analysis models, and seal models. You can deploy it privately for free.

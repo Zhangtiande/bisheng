@@ -43,6 +43,7 @@ BISHENG毕昇 是一款 <b>开源</b> LLM应用开发平台，主攻<b>企业场
 <p align="center"><img src="https://dataelem.com/bs/chat.png" alt="sence1"></p>
 
 3. **企业级特性是应用落地的基本保障**：安全审查、基于角色的细颗粒度权限管理、用户组管理、分组流量控制、SSO/LDAP、漏洞扫描修复、高可用部署方案、监控、统计...
+   - RBAC 新增 `WORK_FLOW_WRITE`（10）权限，用于控制工作流管理。
 <p align="center"><img src="https://dataelem.com/bs/pro.png" alt="sence2"></p>
 
 4. **高精度文档解析**：5年海量数据沉淀，高精度文档解析模型支持免费私有化部署使用，包括高精度印刷体、手写体与生僻字识别模型、表格识别模型、版式分析模型、印章模型
