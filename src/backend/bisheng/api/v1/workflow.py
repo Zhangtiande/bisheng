@@ -277,3 +277,28 @@ def read_flows(*,
         'data': data,
         'total': total
     })
+
+
+@router.post('/lock/{flow_id}', status_code=200)
+async def lock_flow(flow_id: str, login_user: UserPayload = Depends(get_login_user)):
+    """Lock a workflow for editing"""
+    db_flow = FlowDao.get_flow_by_id(flow_id)
+    if not db_flow:
+        raise HTTPException(status_code=404, detail='Flow not found')
+    if db_flow.locked_by and db_flow.locked_by != login_user.user_id:
+        raise HTTPException(status_code=400, detail='Flow locked')
+    db_flow.locked_by = login_user.user_id
+    FlowDao.update_flow(db_flow)
+    return resp_200()
+
+
+@router.post('/unlock/{flow_id}', status_code=200)
+async def unlock_flow(flow_id: str, login_user: UserPayload = Depends(get_login_user)):
+    """Unlock a workflow"""
+    db_flow = FlowDao.get_flow_by_id(flow_id)
+    if not db_flow:
+        raise HTTPException(status_code=404, detail='Flow not found')
+    if db_flow.locked_by == login_user.user_id:
+        db_flow.locked_by = None
+        FlowDao.update_flow(db_flow)
+    return resp_200()

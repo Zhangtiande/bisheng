@@ -52,6 +52,7 @@ export type FlowType = {
   updated_at?: string;
   last_tested_version?: string;
   logo?: string;
+  locked_by?: number | null;
 };
 export type NodeType = {
   id: string;

@@ -153,6 +153,7 @@
     "leaveAndSave": "Leave and Save",
     "onlineVersionMessage": "The current version is online and cannot be modified. You can save the changes as a new version.",
     "unsavedChangesMessage": "You have unsaved changes. Are you sure you want to leave?",
+    "workflowLocked": "Workflow is being edited by another user",
     "runNode": "Run this node",
     "copy": "Copy",
     "cannotBeEmpty": "{{label}} cannot be empty",

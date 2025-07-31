@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union
 
 from pydantic import field_validator
-from sqlalchemy import Column, DateTime, String, and_, func, or_, text
+from sqlalchemy import Column, DateTime, String, Integer, and_, func, or_, text
 from sqlmodel import JSON, Field, select, update
 
 from bisheng.database.base import session_getter
@@ -41,6 +41,7 @@ class FlowBase(SQLModelSerializable):
     status: Optional[int] = Field(index=False, default=1)
     flow_type: Optional[int] = Field(index=False, default=1)
     guide_word: Optional[str] = Field(default=None, sa_column=Column(String(length=1000)))
+    locked_by: Optional[int] = Field(default=None, sa_column=Column(Integer, nullable=True))
     update_time: Optional[datetime] = Field(default=None, sa_column=Column(
         DateTime, nullable=True, server_default=text('CURRENT_TIMESTAMP'), onupdate=text('CURRENT_TIMESTAMP')))
     create_time: Optional[datetime] = Field(default=None, sa_column=Column(
@@ -76,6 +77,7 @@ class FlowRead(FlowBase):
     id: str
     user_name: Optional[str] = None
     version_id: Optional[int] = None
+    locked_by: Optional[int] = None
 
 
 class FlowReadWithStyle(FlowRead):

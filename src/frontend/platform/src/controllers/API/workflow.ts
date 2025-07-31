@@ -65,6 +65,14 @@ export const onlineWorkflowApi = async (data: { flow_id, version_id, status }) =
     return await axios.patch(`/api/v1/workflow/status`, data);
 };
 
+export const lockWorkflowApi = async (id: string) => {
+    return await axios.post(`/api/v1/workflow/lock/${id}`)
+};
+
+export const unlockWorkflowApi = async (id: string) => {
+    return await axios.post(`/api/v1/workflow/unlock/${id}`)
+};
+
 /**
  * 单节点运行
  * 
