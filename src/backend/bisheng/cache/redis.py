@@ -1,4 +1,5 @@
 import pickle
+import asyncio
 from typing import Dict, Optional
 
 import redis
@@ -9,6 +10,26 @@ from redis.backoff import ExponentialBackoff
 from redis.cluster import ClusterNode
 from redis.retry import Retry
 from redis.sentinel import Sentinel
+
+
+class RedisPubSub:
+    """Simple async wrapper around redis-py PubSub."""
+
+    def __init__(self, pubsub):
+        self._pubsub = pubsub
+
+    async def listen(self):
+        while True:
+            message = await asyncio.to_thread(self._pubsub.get_message, timeout=1)
+            if message is None:
+                continue
+            yield message
+
+    def unsubscribe(self):
+        try:
+            self._pubsub.unsubscribe()
+        finally:
+            self._pubsub.close()
 
 
 class RedisClient:
@@ -176,6 +197,18 @@ class RedisClient:
             return self.connection.publish(key, value)
         finally:
             self.close()
+
+    def subscribe(self, *channels):
+        self.cluster_nodes(channels[0] if channels else '')
+        pubsub = self.connection.pubsub(ignore_subscribe_messages=True)
+        pubsub.subscribe(*channels)
+        return RedisPubSub(pubsub)
+
+    def psubscribe(self, *patterns):
+        self.cluster_nodes(patterns[0] if patterns else '')
+        pubsub = self.connection.pubsub(ignore_subscribe_messages=True)
+        pubsub.psubscribe(*patterns)
+        return RedisPubSub(pubsub)
 
     def exists(self, key):
         try:

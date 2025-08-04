@@ -45,6 +45,7 @@ class RedisCallback(BaseCallback):
         self.workflow_data_key = f'workflow:{unique_id}:data'
         self.workflow_status_key = f'workflow:{unique_id}:status'
         self.workflow_event_key = f'workflow:{unique_id}:event'
+        self.workflow_event_channel = f'workflow:{unique_id}:channel'
         self.workflow_input_key = f'workflow:{unique_id}:input'
         self.workflow_stop_key = f'workflow:{unique_id}:stop'
         self.workflow_expire_time = settings.get_workflow_conf().timeout * 60 + 60
@@ -78,7 +79,9 @@ class RedisCallback(BaseCallback):
         self.redis_client.delete(self.workflow_data_key)
 
     def insert_workflow_response(self, event: dict):
-        self.redis_client.rpush(self.workflow_event_key, json.dumps(event), expiration=self.workflow_expire_time)
+        payload = json.dumps(event)
+        self.redis_client.rpush(self.workflow_event_key, payload, expiration=self.workflow_expire_time)
+        self.redis_client.publish(self.workflow_event_channel, payload)
 
     def get_workflow_response(self) -> ChatResponse | None:
         response = self.redis_client.lpop(self.workflow_event_key)
@@ -127,52 +130,33 @@ class RedisCallback(BaseCallback):
                                             {'code': 500, 'message': status_info['reason']})
 
     async def get_response_until_break(self) -> AsyncIterator[ChatResponse]:
-        """ 不断获取workflow的response，直到遇到运行结束或者待输入 """
-        while True:
-            # get workflow status
-            status_info = self.get_workflow_status()
-            if not status_info:
-                yield self.build_chat_response(WorkflowEventType.Error.value, 'over',
-                                               {'code': 500, 'message': 'workflow status not found'})
-                break
-            elif status_info['status'] in [WorkflowStatus.FAILED.value, WorkflowStatus.SUCCESS.value]:
-                while True:
-                    chat_response = self.get_workflow_response()
-                    if not chat_response:
-                        break
-                    yield chat_response
-                if status_info['status'] == WorkflowStatus.FAILED.value:
-                    error_resp = self.parse_workflow_failed(status_info)
-                    if error_resp:
-                        yield error_resp
-                break
-            elif status_info['status'] == WorkflowStatus.INPUT.value:
-                while True:
-                    chat_response = self.get_workflow_response()
-                    if not chat_response:
-                        break
-                    yield chat_response
-                break
-            elif status_info['status'] in [WorkflowStatus.WAITING.value,
-                                           WorkflowStatus.INPUT_OVER.value] and time.time() - status_info['time'] > 10:
-                # 10秒内没有收到状态更新，说明workflow没有启动，可能是celery worker线程数已满
-                self.set_workflow_status(WorkflowStatus.FAILED.value, 'workflow task execute busy')
-                yield self.build_chat_response(WorkflowEventType.Error.value, 'over',
-                                               {'code': WorkFlowTaskBusyError.Code,
-                                                'message': WorkFlowTaskBusyError.Msg})
-                break
-            elif time.time() - status_info['time'] > 86400:
-                yield self.build_chat_response(WorkflowEventType.Error.value, 'over',
-                                               {'code': 500, 'message': 'workflow status not update over 1 day'})
-                self.set_workflow_status(WorkflowStatus.FAILED.value, 'workflow status not update over 1 day')
-                self.set_workflow_stop()
-                break
-            else:
-                chat_response = self.get_workflow_response()
-                if not chat_response:
-                    await asyncio.sleep(1)
+        """Subscribe workflow event channel and yield responses until done."""
+        status_info = self.get_workflow_status()
+        if not status_info:
+            yield self.build_chat_response(WorkflowEventType.Error.value, 'over',
+                                           {'code': 500, 'message': 'workflow status not found'})
+            return
+
+        pubsub = self.redis_client.subscribe(self.workflow_event_channel)
+        try:
+            async for message in pubsub.listen():
+                if message.get('type') != 'message':
                     continue
+                data = json.loads(message['data'])
+                chat_response = ChatResponse(**data)
                 yield chat_response
+
+                status_info = self.get_workflow_status()
+                if status_info and status_info['status'] in [WorkflowStatus.FAILED.value, WorkflowStatus.SUCCESS.value]:
+                    if status_info['status'] == WorkflowStatus.FAILED.value:
+                        error_resp = self.parse_workflow_failed(status_info)
+                        if error_resp:
+                            yield error_resp
+                    break
+                if self.get_workflow_stop():
+                    break
+        finally:
+            pubsub.unsubscribe()
 
     def set_user_input(self, data: dict, message_id: int = None, message_content: str = None):
         if self.chat_id and message_id:

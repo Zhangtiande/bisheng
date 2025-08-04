@@ -39,12 +39,9 @@ class WorkflowClient(BaseClient):
         if self.workflow:
             if force_stop or not self.chat_id:
                 self.workflow.set_workflow_stop()
-                workflow_over = await self._workflow_run()
-                while not workflow_over:
-                    if self.ws_closed:
-                        break
-                    workflow_over = await self._workflow_run()
-                    await asyncio.sleep(0.5)
+                await self._workflow_run()
+            else:
+                await self.send_response('processing', 'close', '')
         else:
             await self.send_response('processing', 'close', '')
 
@@ -150,13 +147,6 @@ class WorkflowClient(BaseClient):
 
     async def workflow_run(self):
         await self._workflow_run()
-        # workflow_over = False
-        # while not workflow_over:
-        #     if self.ws_closed:
-        #         break
-        #     workflow_over = await self._workflow_run()
-        #     await asyncio.sleep(0.5)
-
     async def _workflow_run(self):
         # 需要不断从redis中获取workflow返回的消息
         async for event in self.workflow.get_response_until_break():
