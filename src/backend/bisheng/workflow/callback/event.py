@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Dict
+from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -64,3 +64,14 @@ class StreamMsgData(BaseModel):
 
 class StreamMsgOverData(StreamMsgData):
     source_documents: Optional[List[Any]] = Field(default=[], description='Source documents')
+
+
+class ToolCallData(BaseModel):
+    unique_id: str = Field(..., description='Unique execution id')
+    node_id: str = Field(..., description='Node unique id')
+    run_id: str = Field(..., description='Tool run id')
+    name: str = Field(..., description='Tool name')
+    status: str = Field(..., description='Tool call status')
+    input: Optional[str] = Field(None, description='Tool input')
+    output: Optional[str] = Field(None, description='Tool output')
+    error: Optional[str] = Field(None, description='Tool error message')

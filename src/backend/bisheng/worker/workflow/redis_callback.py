@@ -5,25 +5,26 @@ import time
 import uuid
 from typing import AsyncIterator
 
-from cachetools import TTLCache
-from langchain_core.documents import Document
-from loguru import logger
-
-from bisheng.api.errcode.flow import WorkFlowNodeRunMaxTimesError, WorkFlowWaitUserTimeoutError, \
-    WorkFlowNodeUpdateError, WorkFlowVersionUpdateError, WorkFlowTaskBusyError
+from bisheng.api.errcode.flow import (WorkFlowNodeRunMaxTimesError, WorkFlowNodeUpdateError,
+                                      WorkFlowTaskBusyError, WorkFlowVersionUpdateError,
+                                      WorkFlowWaitUserTimeoutError)
 from bisheng.api.v1.schema.workflow import WorkflowEventType
 from bisheng.api.v1.schemas import ChatResponse
 from bisheng.cache.redis import redis_client
 from bisheng.chat.utils import sync_judge_source, sync_process_source_document
 from bisheng.database.models.flow import FlowDao, FlowType
-from bisheng.database.models.message import ChatMessageDao, ChatMessage
-from bisheng.database.models.session import MessageSessionDao, MessageSession
+from bisheng.database.models.message import ChatMessage, ChatMessageDao
+from bisheng.database.models.session import MessageSession, MessageSessionDao
 from bisheng.settings import settings
 from bisheng.workflow.callback.base_callback import BaseCallback
-from bisheng.workflow.callback.event import NodeStartData, NodeEndData, UserInputData, GuideWordData, GuideQuestionData, \
-    OutputMsgData, StreamMsgData, StreamMsgOverData, OutputMsgChooseData, OutputMsgInputData
+from bisheng.workflow.callback.event import (GuideQuestionData, GuideWordData, NodeEndData,
+                                             NodeStartData, OutputMsgChooseData, OutputMsgData,
+                                             OutputMsgInputData, StreamMsgData, StreamMsgOverData,
+                                             ToolCallData, UserInputData)
 from bisheng.workflow.common.workflow import WorkflowStatus
-
+from cachetools import TTLCache
+from langchain_core.documents import Document
+from loguru import logger
 
 
 class RedisCallback(BaseCallback):
@@ -82,14 +83,15 @@ class RedisCallback(BaseCallback):
 
     def get_workflow_response(self) -> ChatResponse | None:
         response = self.redis_client.lpop(self.workflow_event_key)
-        if response:
-            response = ChatResponse(**json.loads(response))
-            if ((response.category == WorkflowEventType.NodeRun.value and response.type == 'end'
-                 and response.message and response.message.get('node_id', '').startswith('end_')) or
-                    (response.category in [WorkflowEventType.UserInput.value, WorkflowEventType.OutputWithChoose.value
-                        , WorkflowEventType.OutputWithInput.value])):
-                # 如果是结束节点或者输入事件，清空状态缓存
-                self.workflow_cache.clear()
+            if response:
+                response = ChatResponse(**json.loads(response))
+                if ((response.category == WorkflowEventType.NodeRun.value and response.type == 'end'
+                     and response.message and response.message.get('node_id', '').startswith('end_')) or
+                        (response.category in [WorkflowEventType.UserInput.value,
+                                               WorkflowEventType.OutputWithChoose.value,
+                                               WorkflowEventType.OutputWithInput.value])):
+                    # 如果是结束节点或者输入事件，清空状态缓存
+                    self.workflow_cache.clear()
         return response
 
     def build_chat_response(self, category, category_type, message, extra=None, files=None):
@@ -374,7 +376,7 @@ class RedisCallback(BaseCallback):
         logger.debug(f'stream over: {data}')
         # 替换掉minio的share前缀，通过nginx转发  ugly solve
         minio_share = settings.get_minio_conf().sharepoint
-        data.msg = data.msg.replace(f"http://{minio_share}", "")
+        data.msg = data.msg.replace(f'http://{minio_share}', '')
         chat_response = ChatResponse(message=data.dict(exclude={'source_documents'}),
                                      category=WorkflowEventType.StreamMsg.value,
                                      extra='',
@@ -412,4 +414,13 @@ class RedisCallback(BaseCallback):
         msg_id = self.save_chat_message(chat_response, source_documents=data.source_documents)
         if msg_id:
             chat_response.message_id = msg_id
+        self.send_chat_response(chat_response)
+
+    def on_tool_call(self, data: ToolCallData):
+        logger.debug(f'tool call: {data}')
+        chat_response = ChatResponse(message=data.dict(),
+                                     category=WorkflowEventType.ToolCall.value,
+                                     type=data.status,
+                                     flow_id=self.workflow_id,
+                                     chat_id=self.chat_id)
         self.send_chat_response(chat_response)

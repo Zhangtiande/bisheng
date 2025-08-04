@@ -1,9 +1,9 @@
-from typing import Any, Dict, Optional, List, Union
-from uuid import UUID
+from typing import Any, Dict, List, Optional, Union
 
 from bisheng.workflow.callback.base_callback import BaseCallback
-from bisheng.workflow.callback.event import OutputMsgData, StreamMsgData, StreamMsgOverData
-from langchain_core.callbacks.base import AsyncCallbackHandler, BaseCallbackHandler
+from bisheng.workflow.callback.event import (OutputMsgData, StreamMsgData, StreamMsgOverData,
+                                             ToolCallData)
+from langchain_core.callbacks.base import BaseCallbackHandler
 from langchain_core.outputs import LLMResult
 from loguru import logger
 
@@ -39,13 +39,20 @@ class LLMNodeCallbackHandler(BaseCallbackHandler):
         """Run when tool starts running."""
         logger.debug(
             f'on_tool_start  serialized={serialized} input_str={input_str} kwargs={kwargs}')
+        run_id = kwargs.get('run_id').hex
         if self.tool_list is not None:
             self.tool_list.append({
                 'type': 'start',
-                'run_id': kwargs.get('run_id').hex,
+                'run_id': run_id,
                 'name': serialized['name'],
                 'input': input_str,
             })
+        self.callback_manager.on_tool_call(ToolCallData(unique_id=self.unique_id,
+                                                        node_id=self.node_id,
+                                                        run_id=run_id,
+                                                        name=serialized['name'],
+                                                        status='start',
+                                                        input=input_str))
         if serialized['name'] == 'sql_agent':
             self.output = False
 
@@ -53,13 +60,20 @@ class LLMNodeCallbackHandler(BaseCallbackHandler):
         """Run when tool ends running."""
         logger.debug(f'on_tool_end  output={output} kwargs={kwargs}')
         result = output if isinstance(output, str) else getattr(output, 'content', output)
+        run_id = kwargs.get('run_id').hex
         if self.tool_list is not None:
             self.tool_list.append({
                 'type': 'end',
-                'run_id': kwargs.get('run_id').hex,
+                'run_id': run_id,
                 'name': kwargs['name'],
                 'output': result,
             })
+        self.callback_manager.on_tool_call(ToolCallData(unique_id=self.unique_id,
+                                                        node_id=self.node_id,
+                                                        run_id=run_id,
+                                                        name=kwargs['name'],
+                                                        status='end',
+                                                        output=result))
         if kwargs['name'] == 'sql_agent':
             self.output = True
 
@@ -67,12 +81,19 @@ class LLMNodeCallbackHandler(BaseCallbackHandler):
                             **kwargs: Any) -> Any:
         """Run when tool errors."""
         logger.debug(f'on_tool_error error={error} kwargs={kwargs}')
+        run_id = kwargs.get('run_id').hex
         if self.tool_list is not None:
             self.tool_list.append({
                 'type': 'error',
-                'run_id': kwargs.get('run_id').hex,
+                'run_id': run_id,
                 'error': str(error),
             })
+        self.callback_manager.on_tool_call(ToolCallData(unique_id=self.unique_id,
+                                                        node_id=self.node_id,
+                                                        run_id=run_id,
+                                                        name=kwargs.get('name', ''),
+                                                        status='error',
+                                                        error=str(error)))
         if kwargs['name'] == 'sql_agent':
             self.output = True
 

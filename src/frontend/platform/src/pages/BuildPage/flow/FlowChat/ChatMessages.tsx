@@ -13,6 +13,7 @@ import InputForm from "./InputForm";
 import MessageBs from "./MessageBs";
 import MessageBsChoose from "./MessageBsChoose";
 import MessageNodeRun from "./MessageNodeRun";
+import MessageToolCall from "./MessageToolCall";
 import { useMessageStore } from "./messageStore";
 import MessageUser from "./MessageUser";
 
@@ -152,6 +153,8 @@ export default function ChatMessages({
                         return <MessageBsChoose type='input' key={msg.message_id} data={msg} logo={logo} />;
                     case 'node_run':
                         return <MessageNodeRun key={msg.message_id} data={msg} />;
+                    case 'tool_call':
+                        return <MessageToolCall key={msg.message_id} data={msg} index={index} />;
                     default:
                         return <div className="text-sm mt-2 border rounded-md p-2" key={msg.message_id}>Unknown message type</div>;
                 }
