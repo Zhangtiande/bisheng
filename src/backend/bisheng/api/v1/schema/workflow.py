@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, Any, List
+from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -16,6 +16,7 @@ class WorkflowEventType(Enum):
     OutputWithChoose = 'output_with_choose_msg'
     # OutputWithChoose = 'output_choose_msg'
     StreamMsg = 'stream_msg'
+    ToolCall = 'tool_call'
     Close = 'close'
     Error = 'error'
 

@@ -59,7 +59,7 @@ const handleHistoryMsg = (data: any[]): ChatMessageType[] => {
         .replace(/'/g, '"');                    // 将单引号替换为双引号
 
     return data.filter(item =>
-        ["question", "output_with_input_msg", "output_with_choose_msg", "stream_msg", "output_msg", "guide_question", "guide_word", "node_run", "answer"].includes(item.category)
+        ["question", "output_with_input_msg", "output_with_choose_msg", "stream_msg", "output_msg", "guide_question", "guide_word", "node_run", "answer", "tool_call"].includes(item.category)
         && (item.message || item.reasoning_log)).map(item => {
             let { message, files, is_bot, intermediate_steps, category, ...other } = item
             try {
@@ -68,10 +68,11 @@ const handleHistoryMsg = (data: any[]): ChatMessageType[] => {
                 // 未考虑的情况暂不处理
                 console.error('消息 to JSON error :>> ', e);
             }
+            const chatKey = typeof message === 'string' || category === 'tool_call' ? undefined : Object.keys(message)[0]
             return {
                 ...other,
                 category,
-                chatKey: typeof message === 'string' ? undefined : Object.keys(message)[0],
+                chatKey,
                 end: true,
                 files: files ? JSON.parse(files) : [],
                 isSend: !is_bot,
@@ -105,6 +106,32 @@ export const useMessageStore = create<State & Actions>((set, get) => ({
             // 删除与历史消息中message_id相同的消息,则删除
             const messageId = message_id || (category === "guide_word" ? generateUUID(4) : '') // 后端没给,临时生成一个
             newChat = newChat.filter((item => !(item.message_id === message_id && item.his)))
+            if (category === 'tool_call') {
+                const runId = message.run_id
+                const idx = newChat.findIndex(msg => msg.category === 'tool_call' && msg.message.run_id === runId)
+                if (idx > -1) {
+                    newChat[idx] = {
+                        ...newChat[idx],
+                        message: { ...newChat[idx].message, ...message },
+                        end: type !== 'start'
+                    }
+                } else {
+                    newChat.push({
+                        category, flow_id, chat_id,
+                        message_id: runId,
+                        files, is_bot,
+                        message, receiver, source, user_id,
+                        liked: !!liked,
+                        end: type !== 'start',
+                        sender: '',
+                        node_id: message?.node_id || '',
+                        create_time: formatDate(new Date(), 'yyyy-MM-ddTHH:mm:ss'),
+                        extra,
+                        reasoning_log
+                    })
+                }
+                return { messages: newChat }
+            }
             newChat.push({
                 category, flow_id, chat_id,
                 message_id: messageId,

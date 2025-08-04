@@ -1,29 +1,28 @@
 from typing import Dict, Optional
 
-from bisheng.utils import generate_uuid
-from fastapi.encoders import jsonable_encoder
-from langchain.memory import ConversationBufferWindowMemory
-
 from bisheng.api.errcode.base import NotFoundError, UnAuthorizedError
 from bisheng.api.errcode.flow import WorkFlowInitError
 from bisheng.api.services.base import BaseService
 from bisheng.api.services.user_service import UserPayload
+from bisheng.api.v1.schema.workflow import (WorkflowEvent, WorkflowEventType, WorkflowInputItem,
+                                            WorkflowInputSchema, WorkflowOutputSchema)
 from bisheng.api.v1.schemas import ChatResponse
-from bisheng.api.v1.schema.workflow import WorkflowEvent, WorkflowEventType, WorkflowInputSchema, WorkflowInputItem, \
-    WorkflowOutputSchema
 from bisheng.chat.utils import SourceType
-from bisheng.database.models.flow import FlowDao, FlowType, FlowStatus
+from bisheng.database.models.flow import FlowDao, FlowStatus, FlowType
 from bisheng.database.models.flow_version import FlowVersionDao
 from bisheng.database.models.group_resource import GroupResourceDao, ResourceTypeEnum
 from bisheng.database.models.role_access import AccessType, RoleAccessDao
 from bisheng.database.models.tag import TagDao
 from bisheng.database.models.user import UserDao
 from bisheng.database.models.user_role import UserRoleDao
+from bisheng.utils import generate_uuid
 from bisheng.workflow.callback.base_callback import BaseCallback
 from bisheng.workflow.common.node import BaseNodeData, NodeType
 from bisheng.workflow.graph.graph_state import GraphState
 from bisheng.workflow.graph.workflow import Workflow
 from bisheng.workflow.nodes.node_manage import NodeFactory
+from fastapi.encoders import jsonable_encoder
+from langchain.memory import ConversationBufferWindowMemory
 
 
 class WorkFlowService(BaseService):
@@ -223,6 +222,11 @@ class WorkFlowService(BaseService):
                     output_key=chat_response.message.get('output_key'),
                 )
                 cls.handle_source(chat_response, workflow_event)
+            case WorkflowEventType.ToolCall.value:
+                workflow_event.status = chat_response.type
+                workflow_event.output_schema = WorkflowOutputSchema(
+                    message=chat_response.message
+                )
             case WorkflowEventType.Error.value:
                 workflow_event.event = WorkflowEventType.Close.value
                 workflow_event.output_schema = WorkflowOutputSchema(
